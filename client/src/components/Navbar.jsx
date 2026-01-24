@@ -25,7 +25,7 @@ export default function Navbar() {
             <a href="#login" className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
               Log In
             </a>
-            <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
+            <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300">
               Sign Up
             </button>
           </div>
