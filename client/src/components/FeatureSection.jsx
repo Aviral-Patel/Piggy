@@ -1,4 +1,7 @@
 import React from 'react';
+import signboardIcon from '../assets/signboard.png';
+import settingIcon from '../assets/setting_icon.png';
+import screwIcon from '../assets/screw_icon.png';
 
 const FeatureSection = () => {
   const features = [
@@ -12,7 +15,7 @@ const FeatureSection = () => {
         'Complete audit trail with creator and approval tracking',
         'Multi-bank support (HDFC, ICICI, and more)'
       ],
-      icon: '📋'
+      icon: signboardIcon
     },
     {
       id: 2,
@@ -24,7 +27,7 @@ const FeatureSection = () => {
         'Maker-Checker approval workflow',
         'Approval queue for pending templates'
       ],
-      icon: '⚙️'
+      icon: settingIcon
     },
     {
       id: 3,
@@ -36,21 +39,21 @@ const FeatureSection = () => {
         'BigDecimal precision for all currency values',
         'Fallback handling for unidentified SMS patterns'
       ],
-      icon: '🔧'
+      icon: screwIcon
     }
   ];
 
   return (
-    <div className="bg-gray-50 py-16 md:py-24">
+    <div className=" py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-950 mb-4">
-            Fintech SMS-to-Ledger <span className="text-blue-600">Engine</span>
+            Fintech SMS-to-Ledger <span className="text-tertiary">Engine</span>
           </h2>
           <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            Transform unstructured bank SMS alerts into structured financial data with our 
-            comprehensive Management Portal and Parsing Engine. Maintain accurate Personal Finance 
+            Transform unstructured bank SMS alerts into structured financial data with our
+            comprehensive Management Portal and Parsing Engine. Maintain accurate Personal Finance
             Management through automated transaction tracking across multiple banks.
           </p>
         </div>
@@ -63,23 +66,25 @@ const FeatureSection = () => {
               className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
             >
               {/* Icon */}
-              <div className="text-5xl mb-4">{feature.icon}</div>
-              
+              <div className="mb-4">
+                <img src={feature.icon} alt={feature.title} className="w-16 h-16 object-contain" />
+              </div>
+
               {/* Title */}
               <h3 className="text-2xl font-bold text-gray-950 mb-4">
                 {feature.title}
               </h3>
-              
+
               {/* Description */}
               <p className="text-gray-700 mb-6 leading-relaxed">
                 {feature.description}
               </p>
-              
+
               {/* Details List */}
               <ul className="space-y-3">
                 {feature.details.map((detail, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="text-blue-600 mr-2 mt-1">✓</span>
+                    <span className="text-tertiary mr-2 mt-1">✓</span>
                     <span className="text-gray-600 text-sm">{detail}</span>
                   </li>
                 ))}
@@ -88,33 +93,7 @@ const FeatureSection = () => {
           ))}
         </div>
 
-        {/* Bottom CTA Section */}
-        <div className="mt-16 text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto border border-gray-100">
-            <h3 className="text-2xl font-bold text-gray-950 mb-4">
-              Complete Transaction Lifecycle Management
-            </h3>
-            <p className="text-gray-700 mb-6 leading-relaxed">
-              From raw, unstructured SMS text to a structured ledger entry—our system covers 
-              the entire lifecycle while introducing Administrative Governance through workflow 
-              and state management. Track spends, bills, and balances across multiple banks automatically.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <span className="bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
-                Maker-Checker Workflow
-              </span>
-              <span className="bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">
-                Real-time Testing
-              </span>
-              <span className="bg-purple-50 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold">
-                BigDecimal Precision
-              </span>
-              <span className="bg-orange-50 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold">
-                Auto-Identification
-              </span>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
