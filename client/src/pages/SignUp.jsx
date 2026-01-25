@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/p_round.png';
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +22,8 @@ const SignUp = () => {
     e.preventDefault();
     // Handle signup logic here
     console.log('Signup:', formData);
+    // Redirect to dashboard after successful signup
+    navigate('/dashboard');
   };
 
   return (
