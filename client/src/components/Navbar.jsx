@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 import logo from '../assets/p_round.png';
 
 export default function Navbar() {
@@ -15,19 +16,19 @@ export default function Navbar() {
               alt="Piggy Logo" 
               className="h-14 w-14"
             />
-            <a href="/" className="text-3xl font-bold italic text-primary">
+            <Link to="/" className="text-3xl font-bold italic text-primary">
               Piggy
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-4">
-            <a href="#login" className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
+            <Link to="/login" className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
               Log In
-            </a>
-            <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300">
+            </Link>
+            <Link to="/signup" className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300">
               Sign Up
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -56,12 +57,12 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden mt-2 space-y-2 px-2 pb-3">
-            <a href="#login" className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center">
+            <Link to="/login" className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center">
               Log In
-            </a>
-            <button className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center">
+            </Link>
+            <Link to="/signup" className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center">
               Sign Up
-            </button>
+            </Link>
           </div>
         )}
       </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 
 const Hero = () => {
@@ -25,12 +26,12 @@ const Hero = () => {
             Easily track your income and expenses, categorize your spending, and stay on top of your budget — all in one simple, intuitive app.
           </p>
           <div className="mt-10 flex gap-4">
-            <button className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300">
+            <Link to="/signup" className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center">
               Signup
-            </button>
-            <button className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
+            </Link>
+            <Link to="/login" className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center">
               Login
-            </button>
+            </Link>
           </div>
         </div>
       </div>
