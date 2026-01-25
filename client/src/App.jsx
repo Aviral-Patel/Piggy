@@ -7,6 +7,8 @@ import Footer from './components/Footer.jsx'
 import Login from './pages/Login.jsx'
 import SignUp from './pages/SignUp.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import SMSParser from './pages/SMSParser.jsx'
+import TemplateApproval from './pages/TemplateApproval.jsx'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/sms-parser" element={<SMSParser />} />
+        <Route path="/template-approval" element={<TemplateApproval />} />
       </Routes>
     </Router>
   )
