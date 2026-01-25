@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/p_round.png';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,6 +20,8 @@ const Login = () => {
     e.preventDefault();
     // Handle login logic here
     console.log('Login:', formData);
+    // Redirect to dashboard after successful login
+    navigate('/dashboard');
   };
 
   return (
