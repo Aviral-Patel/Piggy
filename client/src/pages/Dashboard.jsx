@@ -1,14 +1,63 @@
-import React, { useState } from 'react';
-import DashboardNavbar from '../components/DashboardNavbar.jsx';
-import Footer from '../components/Footer.jsx';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useUser } from '../context/UserContext';  // ADD THIS
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
+const { user, token, loading, isAuthenticated } = useUser();
   const [smsText, setSmsText] = useState('');
   const [transactions, setTransactions] = useState([]);
   const [parsedData, setParsedData] = useState(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [fetchingTransactions, setFetchingTransactions] = useState(true);
 
+  useEffect(() => {
+    // WAIT for UserContext to finish loading
+    if (!loading && !isAuthenticated()) {
+      navigate('/login');
+    }
+  }, [loading, isAuthenticated, navigate]);  // ADD 'loading' to dependency array
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/transactions', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTransactions(response.data);
+      } catch (err) {
+        console.error('Error fetching transactions:', err);
+        if (err.response?.status === 401) {
+          navigate('/login');
+        }
+      } finally {
+        setFetchingTransactions(false);
+      }
+    };
+  
+    // ONLY fetch if context has finished loading AND user is authenticated
+    if (!loading && isAuthenticated()) {
+      fetchTransactions();
+    } else if (!loading) {
+      // Context loaded but not authenticated
+      setFetchingTransactions(false);
+    }
+  }, [loading, isAuthenticated, token, navigate]);
+
+  if (loading || fetchingTransactions) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="flex items-center justify-center h-96">
+          <p className="text-lg text-gray-600">Loading your transactions...</p>
+        </div>
+      </div>
+    );
+  }
+  
   const handleParse = async (e) => {
     e.preventDefault();
     setError('');
@@ -22,21 +71,17 @@ const Dashboard = () => {
     setLoading(true);
     
     try {
-      // TODO: Replace with your actual backend API endpoint
-      const response = await fetch('http://localhost:8080/api/parse-sms', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ smsText }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to parse SMS');
-      }
-
-      const data = await response.json();
-      setParsedData(data);
+    
+      const response = await axios.post(
+        'http://localhost:8080/api/transactions/parse',
+        { sms: smsText },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // ADD THIS
+          },
+        }
+      );
+      setParsedData(response.data);
     } catch (err) {
       console.error('Error parsing SMS:', err);
       setError('Failed to parse SMS. Please try again.');
@@ -62,12 +107,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardNavbar />
+     
       
       <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-            Transaction Dashboard
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+  Welcome, {user?.username}!
+</h1>
           </h1>
           <p className="text-lg text-gray-600">
             Add your bank SMS messages to track transactions
@@ -114,7 +161,7 @@ const Dashboard = () => {
 
         {/* Parsed Data Preview */}
         {parsedData && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+         <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-green-500">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Parsed Transaction</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -188,7 +235,7 @@ const Dashboard = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {transactions.map((transaction, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div key={transaction.id || index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-500 mb-1">Merchant</label>
@@ -236,7 +283,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      <Footer />
+     
     </div>
   );
 };

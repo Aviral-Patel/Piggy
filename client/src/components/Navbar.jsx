@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import logo from '../assets/p_round.png';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="bg-gray-100 shadow-md">
@@ -23,12 +31,40 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login" className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300">
-              Log In
-            </Link>
-            <Link to="/signup" className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300">
-              Sign Up
-            </Link>
+            {isAuthenticated() ? (
+              // Authenticated User View
+              <>
+                
+                <Link 
+                  to="/dashboard" 
+                  className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              // Guest User View
+              <>
+                <Link 
+                  to="/login" 
+                  className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -57,12 +93,42 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden mt-2 space-y-2 px-2 pb-3">
-            <Link to="/login" className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center">
-              Log In
-            </Link>
-            <Link to="/signup" className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center">
-              Sign Up
-            </Link>
+            {isAuthenticated() ? (
+              // Authenticated User Mobile View
+              <>
+                <div className="text-center text-gray-700 font-medium py-2">
+                  Welcome, {user?.username}!
+                </div>
+                <Link 
+                  to="/dashboard" 
+                  className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition duration-300 text-center"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              // Guest User Mobile View
+              <>
+                <Link 
+                  to="/login" 
+                  className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>

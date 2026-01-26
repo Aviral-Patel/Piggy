@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
-
+import { useUser } from '../context/UserContext';
 const Hero = () => {
+  const { isAuthenticated, user } = useUser();
   return (
     <div className="bg-white text-gray-900">
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -25,6 +26,14 @@ const Hero = () => {
           <p className="mt-6 text-lg text-gray-700 leading-relaxed">
             Easily track your income and expenses, categorize your spending, and stay on top of your budget — all in one simple, intuitive app.
           </p>
+          {isAuthenticated() ? (
+            <div className="mt-10 flex gap-4">
+              <p className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center">
+                Welcome, {user?.username}!
+              </p>
+            </div>
+          ) : (
+
           <div className="mt-10 flex gap-4">
             <Link to="/signup" className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center">
               Signup
@@ -33,6 +42,7 @@ const Hero = () => {
               Login
             </Link>
           </div>
+          )}
         </div>
       </div>
     </div>

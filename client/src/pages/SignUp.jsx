@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/p_round.png';
+import axios from 'axios';
+import { useUser } from '../context/UserContext.jsx';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    username: '',
+    // email: '',
     password: '',
-    confirmPassword: '',
+    // confirmPassword: '',
   });
 
   const handleChange = (e) => {
@@ -18,12 +21,26 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup:', formData);
-    // Redirect to dashboard after successful signup
-    navigate('/dashboard');
+    try {
+      const response = await axios.post('http://localhost:8080/api/auth/register', formData);
+      if (response.data.token) {
+        // Store user data and token in context
+        const userData = {
+          username: formData.username,
+        };
+        
+        login(userData, response.data.token);
+        console.log('Signup Successful:', response.data);
+        
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Error signing up:', error);
+    }
+   
+    
   };
 
   return (
@@ -48,22 +65,22 @@ const SignUp = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="name" className="sr-only">
+              <label htmlFor="username" className="sr-only">
                 Full Name
               </label>
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
                 autoComplete="name"
                 required
                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Full Name"
+                placeholder="Username"
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
@@ -78,7 +95,7 @@ const SignUp = () => {
                 value={formData.email}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             <div>
               <label htmlFor="password" className="sr-only">
                 Password
@@ -95,7 +112,7 @@ const SignUp = () => {
                 onChange={handleChange}
               />
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="confirmPassword" className="sr-only">
                 Confirm Password
               </label>
@@ -110,10 +127,10 @@ const SignUp = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
           </div>
 
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <input
               id="agree-terms"
               name="agree-terms"
@@ -127,7 +144,7 @@ const SignUp = () => {
                 Terms and Conditions
               </a>
             </label>
-          </div>
+          </div> */}
 
           <div>
             <button

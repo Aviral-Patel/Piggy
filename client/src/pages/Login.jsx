@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/p_round.png';
+import { useUser } from '../context/UserContext.jsx';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -16,12 +19,22 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login:', formData);
-    // Redirect to dashboard after successful login
-    navigate('/dashboard');
+    try {
+      const response = await axios.post('http://localhost:8080/api/auth/login', formData);
+      const userData = {
+        username: formData.username,
+      };
+      
+      login(userData, response.data.token);
+      console.log('Login successful:', response.data);
+      
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error logging in:', error);
+    }
+    
   };
 
   return (
@@ -43,21 +56,18 @@ const Login = () => {
         </div>
 
         {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+            <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="name"
                 required
-                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={formData.email}
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                placeholder="Username"
+                value={formData.username}
                 onChange={handleChange}
               />
             </div>
@@ -71,7 +81,7 @@ const Login = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}

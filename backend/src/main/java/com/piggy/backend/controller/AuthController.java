@@ -29,12 +29,5 @@ public class AuthController {
             @RequestBody AuthRequest request) {
         return authService.login(request);
     }
-    @Value("${jwt.secret:}")
-    private String jwtSecret;
-
-
-    @GetMapping("/envcheck")
-    public String check() {
-        return "scdsc"+jwtSecret.length();
-    }
+    
 }

@@ -13,6 +13,9 @@ public class Transaction {
     private String type;
     private double amount;
     private String merchant;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Long getId() { return id; }
 
@@ -29,4 +32,8 @@ public class Transaction {
     public String getMerchant() { return merchant; }
 
     public void setMerchant(String merchant) { this.merchant = merchant; }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
 }
