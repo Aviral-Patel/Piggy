@@ -7,12 +7,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
 const { user, token, loading, isAuthenticated } = useUser();
-  const [smsText, setSmsText] = useState('');
-  const [transactions, setTransactions] = useState([]);
-  const [parsedData, setParsedData] = useState(null);
-  const [error, setError] = useState('');
-  const [fetchingTransactions, setFetchingTransactions] = useState(true);
-
+const [smsText, setSmsText] = useState('');
+const [transactions, setTransactions] = useState([]);
+const [parsedData, setParsedData] = useState(null);
+const [error, setError] = useState('');
+const [parseLoading, setParseLoading] = useState(false);  // ADD THIS NEW STATE
+const [fetchingTransactions, setFetchingTransactions] = useState(true);
   useEffect(() => {
     // WAIT for UserContext to finish loading
     if (!loading && !isAuthenticated()) {
@@ -67,26 +67,29 @@ const { user, token, loading, isAuthenticated } = useUser();
       setError('Please enter an SMS message');
       return;
     }
-
-    setLoading(true);
+  
+    setParseLoading(true);  // CHANGE: Use parseLoading instead of loading
     
     try {
-    
       const response = await axios.post(
         'http://localhost:8080/api/transactions/parse',
         { sms: smsText },
         {
           headers: {
-            Authorization: `Bearer ${token}`,  // ADD THIS
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',  // ADD THIS - explicitly set content type
           },
         }
       );
+      
+      console.log('Parse response:', response.data);  // ADD THIS - for debugging
       setParsedData(response.data);
     } catch (err) {
       console.error('Error parsing SMS:', err);
-      setError('Failed to parse SMS. Please try again.');
+      console.error('Error response:', err.response);  // ADD THIS - for debugging
+      setError(err.response?.data?.message || 'Failed to parse SMS. Please try again.');
     } finally {
-      setLoading(false);
+      setParseLoading(false);  // CHANGE: Use parseLoading instead of loading
     }
   };
 
@@ -143,10 +146,10 @@ const { user, token, loading, isAuthenticated } = useUser();
             <div className="mt-4 flex gap-4">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={parseLoading}
                 className="flex-1 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Parsing...' : 'Parse SMS'}
+                {parseLoading ? 'Parsing...' : 'Parse SMS'}
               </button>
               <button
                 type="button"
