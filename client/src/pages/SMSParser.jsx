@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import DashboardNavbar from '../components/DashboardNavbar.jsx';
 import Footer from '../components/Footer.jsx';
 
 const SMSParser = () => {

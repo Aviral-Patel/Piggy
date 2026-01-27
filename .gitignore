@@ -1,87 +1,72 @@
-# =========================
-# Root gitignore (Piggy)
-# Covers: Spring Boot/Maven backend + React/Vite client + common OS/editor files
-# =========================
-
-# ---- OS / junk ----
+# macOS
 .DS_Store
-Thumbs.db
-Desktop.ini
 
-# ---- Editors / IDEs ----
-# IntelliJ IDEA
-**/.idea/
+# Tooling
+.qodo/
+
+# IDEs/editors
 .idea/
 *.iml
-*.ipr
-*.iws
-
-# VS Code
-**/.vscode/
 .vscode/
-
-# Vim
 *.swp
 *.swo
-*~
 
-# Eclipse
-.classpath
-.project
-.settings/
-bin/
-tmp/
-*.tmp
-*.bak
-*~.nib
-local.properties
-.loadpath
-.recommenders
-
-# NetBeans
-nbproject/private/
-nbbuild/
-nbdist/
-.nb-gradle/
-
-# ---- Tooling caches (optional) ----
-.qudo/
-qudo/
-
-# ---- Env / secrets ----
-.env
-.env.*
-!.env.example
-!.env.sample
-*.pem
-*.key
-
-# ---- Logs ----
+# Logs
 logs/
-*.log
+**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# ---- Java / Maven / Spring Boot ----
-**/target/
+# Node / Frontend (Vite)
+client/node_modules/
+client/dist/
+client/.vite/
+client/.cache/
+client/.parcel-cache/
+client/.turbo/
+client/.eslintcache
+
+# Coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Java / Maven (Spring Boot)
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/spring.log
+
+# H2 database files (if switching from in-memory to file-based)
+backend/**/*.h2.db
+backend/**/*.mv.db
+backend/**/*.trace.db
+
+# Generic build outputs
 **/build/
-*.class
-*.jar
-*.war
-*.ear
-hs_err_pid*
+**/out/
 
-# Maven wrapper jar is typically not committed (it will be downloaded when needed)
-.mvn/wrapper/maven-wrapper.jar
+# Env & secrets (frontend/backend)
+.env
+.env.*
+**/.env
+**/.env.*
+*.env
+*.env.*
 
-# ---- Node / Vite / React ----
-**/node_modules/
-**/dist/
-**/dist-ssr/
-**/.vite/
-**/coverage/
-*.local
+# Vite local env variants
+client/.env.local
+client/.env.*.local
 
+# Spring application properties and local-only overrides
+backend/src/main/resources/application.properties
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-*.local.properties
+backend/src/main/resources/*.secret.*
+backend/src/main/resources/*.private.*
+
+# OS
+Thumbs.db
