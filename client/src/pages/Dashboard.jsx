@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import TransactionCards from '../components/TransactionCards.jsx';
@@ -121,6 +121,29 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
           <p className="text-lg text-gray-600">
             Add your bank SMS messages to track transactions
           </p>
+          
+          {/* Role-based navigation buttons */}
+          {user?.role === 'MAKER' && (
+            <div className="mt-6">
+              <Link
+                to="/sms-parser"
+                className="inline-block bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
+              >
+                Go to SMS Parser
+              </Link>
+            </div>
+          )}
+          
+          {user?.role === 'CHECKER' && (
+            <div className="mt-6">
+              <Link
+                to="/template-approval"
+                className="inline-block bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
+              >
+                Go to Template Approval
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* SMS Input Form */}

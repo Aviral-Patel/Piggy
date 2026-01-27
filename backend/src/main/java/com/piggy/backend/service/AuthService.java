@@ -4,6 +4,7 @@ import com.piggy.backend.config.JwtService;
 import com.piggy.backend.dto.AuthRequest;
 import com.piggy.backend.dto.AuthResponse;
 import com.piggy.backend.dto.RegisterRequest;
+import com.piggy.backend.entity.Role;
 import com.piggy.backend.entity.User;
 import com.piggy.backend.repository.UserRepository;
 
@@ -47,6 +48,27 @@ public class AuthService {
                 request.getPassword(),
                 user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
+        }
+
+        return new AuthResponse(
+                jwtService.generateToken(user.getUsername()));
+    }
+
+    public AuthResponse adminLogin(AuthRequest request) {
+        User user = userRepository
+                .findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        // Verify password
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        // Verify user has ADMIN role
+        if (user.getRole() != Role.ADMIN) {
+            throw new RuntimeException("Access denied. Admin role required.");
         }
 
         return new AuthResponse(

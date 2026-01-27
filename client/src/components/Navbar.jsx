@@ -8,9 +8,19 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
 
+  // Check if admin is logged in
+  const isAdminAuthenticated = () => {
+    return !!localStorage.getItem('adminToken');
+  };
+
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    if (isAdminAuthenticated()) {
+      localStorage.removeItem('adminToken');
+      navigate('/');
+    } else {
+      logout();
+      navigate('/');
+    }
   };
 
   return (
@@ -31,7 +41,23 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated() ? (
+            {isAdminAuthenticated() ? (
+              // Admin Authenticated View
+              <>
+                <Link 
+                  to="/admin/dashboard" 
+                  className="text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300"
+                >
+                  Admin Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : isAuthenticated() ? (
               // Authenticated User View
               <>
                 
@@ -93,7 +119,26 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden mt-2 space-y-2 px-2 pb-3">
-            {isAuthenticated() ? (
+            {isAdminAuthenticated() ? (
+              // Admin Authenticated Mobile View
+              <>
+                <div className="text-center text-gray-700 font-medium py-2">
+                  Admin
+                </div>
+                <Link 
+                  to="/admin/dashboard" 
+                  className="block text-primary px-8 py-3 rounded-full font-semibold hover:bg-secondary transition duration-300 text-center"
+                >
+                  Admin Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center"
+                >
+                  Logout
+                </button>
+              </>
+            ) : isAuthenticated() ? (
               // Authenticated User Mobile View
               <>
                 <div className="text-center text-gray-700 font-medium py-2">
