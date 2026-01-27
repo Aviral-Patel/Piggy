@@ -43,7 +43,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition duration-300"
+                  className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
                 >
                   Logout
                 </button>
@@ -107,7 +107,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block w-full bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition duration-300 text-center"
+                  className="block w-full bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300 text-center"
                 >
                   Logout
                 </button>

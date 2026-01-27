@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from '../context/UserContext';  // ADD THIS
+import { useUser } from '../context/UserContext';
+import TransactionCards from '../components/TransactionCards.jsx';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -115,9 +116,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
       <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-  Welcome, {user?.username}!
-</h1>
+            Welcome, {user?.username}!
           </h1>
           <p className="text-lg text-gray-600">
             Add your bank SMS messages to track transactions
@@ -231,59 +230,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
         )}
 
         {/* Transactions Cards */}
-        {transactions.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Transactions ({transactions.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {transactions.map((transaction, index) => (
-                <div key={transaction.id || index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-500 mb-1">Merchant</label>
-                      <p className="text-lg font-semibold text-gray-900">{transaction.merchant || 'N/A'}</p>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-500 mb-1">Amount</label>
-                      <p className="text-xl font-bold text-primary">
-                        ₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
-                      <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-secondary text-primary">
-                        {transaction.category || 'N/A'}
-                      </span>
-                    </div>
-
-                    {transaction.date && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Date</label>
-                        <p className="text-base font-semibold text-gray-900">{transaction.date}</p>
-                      </div>
-                    )}
-
-                    {transaction.type && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-500 mb-1">Type</label>
-                        <p className="text-base font-semibold text-gray-900">{transaction.type}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {transactions.length === 0 && (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-500 text-lg">No transactions yet. Add your first SMS message above!</p>
-          </div>
-        )}
+        <TransactionCards transactions={transactions} />
       </div>
 
      
