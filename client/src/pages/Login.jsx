@@ -25,6 +25,7 @@ const Login = () => {
       const response = await axios.post('http://localhost:8080/api/auth/login', formData);
       const userData = {
         username: formData.username,
+        role: response.data.role, // Include role from response
       };
       
       login(userData, response.data.token);

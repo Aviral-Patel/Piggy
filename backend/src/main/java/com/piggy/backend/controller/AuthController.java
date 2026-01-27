@@ -29,5 +29,11 @@ public class AuthController {
             @RequestBody AuthRequest request) {
         return authService.login(request);
     }
+
+    @PostMapping("/admin/login")
+    public AuthResponse adminLogin(
+            @RequestBody AuthRequest request) {
+        return authService.adminLogin(request);
+    }
     
 }
