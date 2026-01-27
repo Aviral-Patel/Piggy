@@ -17,12 +17,15 @@ public class TransactionService {
 
     private final TransactionRepository repository;
     private final UserRepository userRepository;
+    private final SmsRegexParser smsRegexParser;
 
     public TransactionService(
             TransactionRepository repository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            SmsRegexParser smsRegexParser) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.smsRegexParser = smsRegexParser;
     }
 
     // MODIFY THIS: Parse SMS and save transaction for a specific user
@@ -32,7 +35,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Parse the SMS
-        Transaction transaction = SmsRegexParser.parse(sms);
+        Transaction transaction = smsRegexParser.parse(sms);
         
         // Associate with user
         transaction.setUser(user);

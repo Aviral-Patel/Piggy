@@ -1,30 +1,59 @@
 package com.piggy.backend.util;
 
+import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.Transaction;
+import com.piggy.backend.service.PatternService;
+import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+@Component
 public class SmsRegexParser {
 
-    private static final Pattern PATTERN =
-            Pattern.compile(
-                    "(credited|debited).*?Rs\\.?\\s?(\\d+).*?at\\s(\\w+)",
-                    Pattern.CASE_INSENSITIVE
+    private final PatternService patternService;
+
+    public SmsRegexParser(PatternService patternService) {
+        this.patternService = patternService;
+    }
+
+    public Transaction parse(String sms) {
+        List<Pattern> approvedPatterns = patternService.getApprovedPatterns();
+        for (Pattern pattern : approvedPatterns) {
+            java.util.regex.Pattern regex = java.util.regex.Pattern.compile(
+                    pattern.getRegexPattern(),
+                    java.util.regex.Pattern.CASE_INSENSITIVE
             );
+            Matcher matcher = regex.matcher(sms);
 
-    public static Transaction parse(String sms) {
-        Matcher matcher = PATTERN.matcher(sms);
+            if (matcher.find()) {
 
-        if (!matcher.find()) {
-            throw new RuntimeException("Invalid SMS format");
+                return buildTransaction(matcher, pattern.getMessage());
+            }
         }
 
+        throw new RuntimeException("No matching pattern found for SMS");
+    }
+
+    private Transaction buildTransaction(Matcher matcher, String message) {
         Transaction transaction = new Transaction();
-        transaction.setType(matcher.group(1));
-        transaction.setAmount(
-                Double.parseDouble(matcher.group(2)));
-        transaction.setMerchant(matcher.group(3));
+        transaction.setType(matcher.group("type").toUpperCase());
+
+        String amountStr = matcher.group("amount").replace(",", "");
+        transaction.setAmount(new BigDecimal(amountStr));
+
+        try { transaction.setMerchant(matcher.group("merchant")); }
+        catch (Exception e) { transaction.setMerchant("Unknown"); }
+
+        try { transaction.setAccountNumber(matcher.group("accountNumber")); }
+        catch (Exception e) { /* skip */ }
+
+        try { transaction.setBankName(matcher.group("bankName")); }
+        catch (Exception e) { transaction.setBankName(message); }
+
+        transaction.setDate(LocalDateTime.now());
 
         return transaction;
     }

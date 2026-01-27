@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Footer from '../components/Footer.jsx';
 
 const SMSParser = () => {
   // Sample data - in real app, this would come from props or API
@@ -180,7 +179,7 @@ const SMSParser = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <DashboardNavbar />
+    
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-primary mb-8">SMS Message Template Information</h1>
 
@@ -396,7 +395,6 @@ const SMSParser = () => {
           </button>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
