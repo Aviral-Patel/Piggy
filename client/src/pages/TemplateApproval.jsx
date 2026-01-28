@@ -1,146 +1,90 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useUser } from '../context/UserContext';
 
 const TemplateApproval = () => {
-  // Sample data - in real app, this would come from API
-  const [templates, setTemplates] = useState([
-    {
-      id: 1,
-      bankName: 'ICICI Bank',
-      transactionType: 'Debit Transaction',
-      smsMessage: 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
-      regexPattern: '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
-      status: 'pending',
-      requestedBy: 'Maker User 1',
-      requestedDate: '2024-01-15'
-    },
-    {
-      id: 2,
-      bankName: 'HDFC Bank',
-      transactionType: 'Credit Transaction',
-      smsMessage: 'Dear Customer, Your A/c XX284 credited with INR 3,000.00 on 16-Apr-20 by Acct XX165. IMPS: 010710592992. Call 18002662 for dispute.',
-      regexPattern: '(?s).*?(?:A/c|Account|Acct)\\s*([xX0-9]+)\\s+credited\\s+(?:with|by)\\s+(?:INR|Rs\\.?)\\s*([0-9]+(?:\\.[0-9]+)?)\\s+on\\s+(\\d{2}-[A-z]{3}-\\d{2,4}).*?IMPS\\s*:?\\s*([0-9]+).*',
-      status: 'pending',
-      requestedBy: 'Maker User 2',
-      requestedDate: '2024-01-16'
-    },
-    {
-      id: 3,
-      bankName: 'SBI Bank',
-      transactionType: 'Balance Inquiry',
-      smsMessage: 'Your SBI A/c XX4677 balance is Rs. 21,132.00 as on 18-11-2023 18:30:02. For queries call 18004253800.',
-      regexPattern: '(?s).*?(?:A/c|Account)\\s*([xX0-9]+)\\s+balance\\s+is\\s+(?:Rs\\.?|INR)\\s*([0-9,]+(?:\\.[0-9]+)?)\\s+as\\s+on\\s+(\\d{2}-\\d{2}-\\d{4})\\s+(\\d{2}:\\d{2}:\\d{2}).*',
-      status: 'pending',
-      requestedBy: 'Maker User 3',
-      requestedDate: '2024-01-17'
-    },
-    {
-      id: 4,
-      bankName: 'Axis Bank',
-      transactionType: 'Debit Transaction',
-      smsMessage: 'Dear Customer, your a/c no. xxxxxxxx4677 is debited by rs. 21132.00 on 18-11-2023 18:30:02 by a/c linked to mobile xxxxx347195. (imps ref no 230961492748)',
-      regexPattern: '(?s).*?(?:a/c|account)\\s+no\\.\\s+([xX0-9]+)\\s+is\\s+debited\\s+by\\s+(?:rs\\.?|INR)\\s*([0-9,]+(?:\\.[0-9]+)?)\\s+on\\s+(\\d{2}-\\d{2}-\\d{4})\\s+(\\d{2}:\\d{2}:\\d{2}).*?imps\\s+ref\\s+no\\s+([0-9]+).*',
-      status: 'pending',
-      requestedBy: 'Maker User 1',
-      requestedDate: '2024-01-18'
-    },
-    {
-      id: 5,
-      bankName: 'Kotak Mahindra Bank',
-      transactionType: 'Credit Transaction',
-      smsMessage: 'Your Kotak A/c XX312 credited with rs 425.00 on 08-Jul-22 and account linked to mobile number xx7362. Ref: KOTAK123456',
-      regexPattern: '(?s).*?(?:A/c|Account)\\s*([xX0-9]+)\\s+credited\\s+with\\s+(?:rs|INR)\\s*([0-9]+(?:\\.[0-9]+)?)\\s+on\\s+(\\d{2}-[A-z]{3}-\\d{2}).*?Ref:\\s*([A-Z0-9]+).*',
-      status: 'pending',
-      requestedBy: 'Maker User 2',
-      requestedDate: '2024-01-19'
+  const navigate = useNavigate();
+  const { token } = useUser();
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchPendingPatterns();
+  }, []);
+
+  const fetchPendingPatterns = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:8080/api/patterns/pending', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Only show pending patterns
+      const pendingPatterns = response.data.filter(p => p.status === 'PENDING');
+      setTemplates(pendingPatterns);
+    } catch (err) {
+      console.error('Error fetching pending patterns:', err);
+      setError('Failed to load pending patterns. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  ]);
-
-  const [filterStatus, setFilterStatus] = useState('all'); // all, pending, approved, rejected
-
-  const handleApprove = (id) => {
-    setTemplates(prev => prev.map(template =>
-      template.id === id ? { ...template, status: 'approved' } : template
-    ));
-    // In real app, this would make an API call
-    console.log(`Template ${id} approved`);
   };
 
-  const handleReject = (id) => {
-    setTemplates(prev => prev.map(template =>
-      template.id === id ? { ...template, status: 'rejected' } : template
-    ));
-    // In real app, this would make an API call
-    console.log(`Template ${id} rejected`);
+  const handleCheck = (template) => {
+    // Navigate to SMSParser with pattern and message data
+    navigate('/sms-parser', {
+      state: {
+        pattern: template.regexPattern,
+        sampleMsg: template.message,
+        patternId: template.id
+      }
+    });
   };
 
-  const filteredTemplates = filterStatus === 'all'
-    ? templates
-    : templates.filter(t => t.status === filterStatus);
+  // Only pending patterns are displayed
+  const filteredTemplates = templates.filter(t => t.status === 'PENDING');
 
   const getStatusBadge = (status) => {
     const statusStyles = {
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      approved: 'bg-green-100 text-green-800 border-green-300',
-      rejected: 'bg-red-100 text-red-800 border-red-300'
+      PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      APPROVED: 'bg-green-100 text-green-800 border-green-300',
+      REJECTED: 'bg-red-100 text-red-800 border-red-300'
     };
 
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[status] || statusStyles.pending}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles[status] || statusStyles.PENDING}`}>
+        {status.charAt(0) + status.slice(1).toLowerCase()}
       </span>
     );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-lg text-gray-600">Loading pending patterns...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-   
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">Regex Template Approval</h1>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFilterStatus('all')}
-              className={`px-4 py-2 rounded-md font-semibold transition ${filterStatus === 'all'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilterStatus('pending')}
-              className={`px-4 py-2 rounded-md font-semibold transition ${filterStatus === 'pending'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilterStatus('approved')}
-              className={`px-4 py-2 rounded-md font-semibold transition ${filterStatus === 'approved'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-            >
-              Approved
-            </button>
-            <button
-              onClick={() => setFilterStatus('rejected')}
-              className={`px-4 py-2 rounded-md font-semibold transition ${filterStatus === 'rejected'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-            >
-              Rejected
-            </button>
-          </div>
+          <h1 className="text-3xl font-bold text-primary">Checker</h1>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
 
         {filteredTemplates.length === 0 ? (
           <div className="bg-gray-50 rounded-lg p-12 text-center">
-            <p className="text-gray-600 text-lg">No templates found with the selected filter.</p>
+            <p className="text-gray-600 text-lg">No pending patterns found.</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -153,38 +97,18 @@ const TemplateApproval = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
                       <h3 className="text-xl font-semibold text-primary">
-                        Template #{template.id}
+                        Pattern #{template.id}
                       </h3>
                       {getStatusBadge(template.status)}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="text-sm font-medium text-gray-600">Bank Name</label>
-                        <p className="text-base text-gray-900 font-semibold mt-1">{template.bankName}</p>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-600">Transaction Type</label>
-                        <p className="text-base text-gray-900 font-semibold mt-1">{template.transactionType}</p>
-                      </div>
-                      <div className="md:col-span-2">
-                        <label className="text-sm font-medium text-gray-600">Requested By</label>
-                        <p className="text-sm text-gray-700 mt-1">{template.requestedBy} • {template.requestedDate}</p>
-                      </div>
-                    </div>
                   </div>
-                  {template.status === 'pending' && (
+                  {template.status === 'PENDING' && (
                     <div className="flex gap-2 ml-4">
                       <button
-                        onClick={() => handleApprove(template.id)}
+                        onClick={() => handleCheck(template)}
                         className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold whitespace-nowrap"
                       >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(template.id)}
-                        className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 font-semibold whitespace-nowrap"
-                      >
-                        Reject
+                        Check
                       </button>
                     </div>
                   )}
@@ -193,11 +117,11 @@ const TemplateApproval = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="bg-white rounded-md p-4 border border-gray-300">
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      SMS Message
+                      Sample Message
                     </label>
                     <div className="bg-gray-50 rounded p-3 max-h-32 overflow-y-auto">
                       <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
-                        {template.smsMessage}
+                        {template.message}
                       </p>
                     </div>
                   </div>
@@ -212,14 +136,6 @@ const TemplateApproval = () => {
                     </div>
                   </div>
                 </div>
-
-                {template.status !== 'pending' && (
-                  <div className="mt-4 pt-4 border-t border-gray-300">
-                    <p className="text-sm text-gray-600">
-                      {template.status === 'approved' ? '✓' : '✗'} This template was {template.status} by Administrator
-                    </p>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -228,28 +144,12 @@ const TemplateApproval = () => {
         {/* Summary Stats */}
         <div className="mt-8 bg-secondary rounded-lg p-6">
           <h3 className="text-lg font-semibold text-primary mb-4">Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-md p-4 text-center">
-              <p className="text-2xl font-bold text-primary">{templates.length}</p>
-              <p className="text-sm text-gray-600 mt-1">Total Templates</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <div className="bg-white rounded-md p-4 text-center">
               <p className="text-2xl font-bold text-yellow-600">
-                {templates.filter(t => t.status === 'pending').length}
+                {filteredTemplates.length}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Pending</p>
-            </div>
-            <div className="bg-white rounded-md p-4 text-center">
-              <p className="text-2xl font-bold text-green-600">
-                {templates.filter(t => t.status === 'approved').length}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Approved</p>
-            </div>
-            <div className="bg-white rounded-md p-4 text-center">
-              <p className="text-2xl font-bold text-red-600">
-                {templates.filter(t => t.status === 'rejected').length}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Rejected</p>
+              <p className="text-sm text-gray-600 mt-1">Pending Patterns</p>
             </div>
           </div>
         </div>
