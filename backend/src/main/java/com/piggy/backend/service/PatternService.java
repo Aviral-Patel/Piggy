@@ -18,7 +18,18 @@ public class PatternService {
         return patternRepository.findByStatus(PatternStatus.APPROVED);
     }
 
+    public List<Pattern> getPendingPatterns() {
+        return patternRepository.findByStatus(PatternStatus.PENDING);
+    }
+
     public Pattern savePattern(Pattern pattern) {
+        return patternRepository.save(pattern);
+    }
+
+    public Pattern updatePatternStatus(Long id, PatternStatus status) {
+        Pattern pattern = patternRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pattern not found"));
+        pattern.setStatus(status);
         return patternRepository.save(pattern);
     }
 
