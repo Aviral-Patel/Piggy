@@ -39,7 +39,13 @@ public class SmsRegexParser {
 
     private Transaction buildTransaction(Matcher matcher, String message) {
         Transaction transaction = new Transaction();
-        transaction.setType(matcher.group("type").toUpperCase());
+        
+        // Try to get type, default to "DEBITED" if not found
+        try {
+            transaction.setType(matcher.group("type").toUpperCase());
+        } catch (Exception e) {
+            transaction.setType("DEBITED"); // Default type
+        }
 
         String amountStr = matcher.group("amount").replace(",", "");
         transaction.setAmount(new BigDecimal(amountStr));
