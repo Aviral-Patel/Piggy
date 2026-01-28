@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard.jsx'
 import SMSParser from './pages/SMSParser.jsx'
 import TemplateApproval from './pages/TemplateApproval.jsx'
 import Home from './pages/Home.jsx'
+import AdminLogin from './pages/AdminLogin.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 
@@ -21,6 +23,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sms-parser" element={<SMSParser />} />
         <Route path="/template-approval" element={<TemplateApproval />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
       <Footer />
     </Router>
