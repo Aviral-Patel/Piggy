@@ -18,23 +18,9 @@ const SMSParser = () => {
     accountType: 'Bank',
     templateType: 'Processed',
 
-    // Features
-    multipleAccounts: false,
-    temporarilyDeprecated: false,
-    serverProcessed: false,
-    process: false,
-    ignoreMsg: false,
-
     // Pattern and Sample
     pattern: '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
     sampleMsg: 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
-
-    // Date Format
-    dateFormat: 'dd-MMM-yyyy HH:mm:s',
-    alternateDateFormat: '',
-    processingWeight: '100',
-    minAppVersion: 'Any Version',
-    tag: 'test',
 
     // Transaction Data
     bankAcId: '1',
@@ -46,42 +32,6 @@ const SMSParser = () => {
     balance: '-1',
     balanceNegative: false,
     location: '-1',
-
-    // Additional Details
-    arrears: '-1',
-    outstanding: '-1',
-    availLimit: '-1',
-    creditLimit: '-1',
-    generalPaymentType: '-1',
-    city: '-1',
-
-    // Biller Details
-    billerAcId: '-1',
-    billId: '-1',
-    billDate: '-1',
-    billPeriod: '-1',
-    dueDate: '-1',
-    minAmtDue: '-1',
-    totAmtDue: '-1',
-
-    // FD Details
-    principalAmount: '-1',
-    frequency: '-1',
-    maturityDate: '-1',
-    maturityAmount: '-1',
-    rateOfInterest: '-1',
-
-    // MF Details
-    mfNav: '-1',
-    mfUnits: '-1',
-    mfArn: '-1',
-    mfBalUnits: '-1',
-    mfSchemeBal: '-1',
-
-    // Order Details
-    amountPaid: '-1',
-    offerAmount: '-1',
-    minPurchaseAmt: '-1',
 
     // Editor Comments and Processed Result
     onDemand: false,
@@ -237,15 +187,6 @@ const SMSParser = () => {
           />
         </FieldGroup>
 
-        {/* Features */}
-        <FieldGroup title="Features" cols={5}>
-          <CheckboxField label="Multiple Accounts" name="multipleAccounts" checked={formData.multipleAccounts} onChange={handleInputChange} />
-          <CheckboxField label="Temporarily Deprecated" name="temporarilyDeprecated" checked={formData.temporarilyDeprecated} onChange={handleInputChange} />
-          <CheckboxField label="Server Processed" name="serverProcessed" checked={formData.serverProcessed} onChange={handleInputChange} />
-          <CheckboxField label="Process" name="process" checked={formData.process} onChange={handleInputChange} />
-          <CheckboxField label="Ignore Msg" name="ignoreMsg" checked={formData.ignoreMsg} onChange={handleInputChange} />
-        </FieldGroup>
-
         {/* Pattern and Sample Message */}
         <FieldGroup title="Pattern & Sample Message" cols={1}>
           <TextAreaField
@@ -266,21 +207,6 @@ const SMSParser = () => {
           />
         </FieldGroup>
 
-        {/* Date Format */}
-        <FieldGroup title="Date Format & Versioning" cols={3}>
-          <InputField label="Date Format" name="dateFormat" value={formData.dateFormat} onChange={handleInputChange} />
-          <InputField label="Alternate Date Format" name="alternateDateFormat" value={formData.alternateDateFormat} onChange={handleInputChange} />
-          <InputField label="Processing Weight" name="processingWeight" value={formData.processingWeight} onChange={handleInputChange} />
-          <SelectField
-            label="Min App Version"
-            name="minAppVersion"
-            value={formData.minAppVersion}
-            onChange={handleInputChange}
-            options={['Any Version', '1.0.0', '1.1.0', '2.0.0']}
-          />
-          <InputField label="Tag" name="tag" value={formData.tag} onChange={handleInputChange} />
-        </FieldGroup>
-
         {/* Transaction Data Fields */}
         <FieldGroup title="Transaction Data Fields" cols={4}>
           <InputField label="Bank A/C Id" name="bankAcId" value={formData.bankAcId} onChange={handleInputChange} className="w-full" />
@@ -296,52 +222,6 @@ const SMSParser = () => {
             <CheckboxField label="Negative" name="balanceNegative" checked={formData.balanceNegative} onChange={handleInputChange} />
           </div>
           <InputField label="Location" name="location" value={formData.location} onChange={handleInputChange} className="w-full" />
-        </FieldGroup>
-
-        {/* General Details */}
-        <FieldGroup title="General Details" cols={3}>
-          <InputField label="Arrears" name="arrears" value={formData.arrears} onChange={handleInputChange} />
-          <InputField label="Outstanding" name="outstanding" value={formData.outstanding} onChange={handleInputChange} />
-          <InputField label="Avail Limit" name="availLimit" value={formData.availLimit} onChange={handleInputChange} />
-          <InputField label="Credit Limit" name="creditLimit" value={formData.creditLimit} onChange={handleInputChange} />
-          <InputField label="Payment Type" name="generalPaymentType" value={formData.generalPaymentType} onChange={handleInputChange} />
-          <InputField label="City" name="city" value={formData.city} onChange={handleInputChange} />
-        </FieldGroup>
-
-        {/* Biller Details */}
-        <FieldGroup title="Biller Details" cols={4}>
-          <InputField label="Biller A/C Id" name="billerAcId" value={formData.billerAcId} onChange={handleInputChange} />
-          <InputField label="Bill Id" name="billId" value={formData.billId} onChange={handleInputChange} />
-          <InputField label="Bill Date" name="billDate" value={formData.billDate} onChange={handleInputChange} />
-          <InputField label="Bill Period" name="billPeriod" value={formData.billPeriod} onChange={handleInputChange} />
-          <InputField label="Due Date" name="dueDate" value={formData.dueDate} onChange={handleInputChange} />
-          <InputField label="Min Amt Due" name="minAmtDue" value={formData.minAmtDue} onChange={handleInputChange} />
-          <InputField label="Tot Amt Due" name="totAmtDue" value={formData.totAmtDue} onChange={handleInputChange} />
-        </FieldGroup>
-
-        {/* FD Details */}
-        <FieldGroup title="FD Details" cols={3}>
-          <InputField label="Principal Amount" name="principalAmount" value={formData.principalAmount} onChange={handleInputChange} />
-          <InputField label="Frequency" name="frequency" value={formData.frequency} onChange={handleInputChange} />
-          <InputField label="Maturity Date" name="maturityDate" value={formData.maturityDate} onChange={handleInputChange} />
-          <InputField label="Maturity Amount" name="maturityAmount" value={formData.maturityAmount} onChange={handleInputChange} />
-          <InputField label="Rate Of Interest" name="rateOfInterest" value={formData.rateOfInterest} onChange={handleInputChange} />
-        </FieldGroup>
-
-        {/* MF Details */}
-        <FieldGroup title="MF Details" cols={3}>
-          <InputField label="MF Nav" name="mfNav" value={formData.mfNav} onChange={handleInputChange} />
-          <InputField label="MF Units" name="mfUnits" value={formData.mfUnits} onChange={handleInputChange} />
-          <InputField label="MF ARN" name="mfArn" value={formData.mfArn} onChange={handleInputChange} />
-          <InputField label="MF Bal Units" name="mfBalUnits" value={formData.mfBalUnits} onChange={handleInputChange} />
-          <InputField label="MF Scheme Bal" name="mfSchemeBal" value={formData.mfSchemeBal} onChange={handleInputChange} />
-        </FieldGroup>
-
-        {/* Order Details */}
-        <FieldGroup title="Order Details" cols={3}>
-          <InputField label="Amount Paid" name="amountPaid" value={formData.amountPaid} onChange={handleInputChange} />
-          <InputField label="Offer Amount" name="offerAmount" value={formData.offerAmount} onChange={handleInputChange} />
-          <InputField label="Min Purchase Amt" name="minPurchaseAmt" value={formData.minPurchaseAmt} onChange={handleInputChange} />
         </FieldGroup>
 
         {/* Editor Comments and Processed Result

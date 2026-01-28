@@ -35,6 +35,12 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
+  // Update user data (e.g., role)
+  const updateUser = (newUserData) => {
+    setUser(newUserData);
+    localStorage.setItem('user', JSON.stringify(newUserData));
+  };
+
   // Check if user is authenticated
   const isAuthenticated = () => {
     return !!token;
@@ -47,6 +53,7 @@ export const UserProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated,
+    updateUser,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

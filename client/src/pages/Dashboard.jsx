@@ -7,13 +7,37 @@ import TransactionCards from '../components/TransactionCards.jsx';
 const Dashboard = () => {
   const navigate = useNavigate();
   
-const { user, token, loading, isAuthenticated } = useUser();
+const { user, token, loading, isAuthenticated, updateUser } = useUser();
 const [smsText, setSmsText] = useState('');
 const [transactions, setTransactions] = useState([]);
 const [parsedData, setParsedData] = useState(null);
 const [error, setError] = useState('');
 const [parseLoading, setParseLoading] = useState(false);  // ADD THIS NEW STATE
 const [fetchingTransactions, setFetchingTransactions] = useState(true);
+  
+  // Fetch user role if missing
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (!loading && isAuthenticated() && token && (!user?.role || user.role === 'undefined')) {
+        try {
+          const response = await axios.get('http://localhost:8080/api/auth/me', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          // Update user with role
+          updateUser({
+            ...user,
+            role: response.data.role,
+          });
+        } catch (err) {
+          console.error('Error fetching user role:', err);
+        }
+      }
+    };
+    fetchUserRole();
+  }, [loading, isAuthenticated, token, user, updateUser]);
+
   useEffect(() => {
     // WAIT for UserContext to finish loading
     if (!loading && !isAuthenticated()) {
@@ -123,7 +147,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
           </p>
           
           {/* Role-based navigation buttons */}
-          {user?.role === 'MAKER' && (
+          {user?.role?.toLowerCase() === 'maker' && (
             <div className="mt-6">
               <Link
                 to="/sms-parser"
@@ -134,7 +158,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
             </div>
           )}
           
-          {user?.role === 'CHECKER' && (
+          {user?.role?.toLowerCase() === 'checker' && (
             <div className="mt-6">
               <Link
                 to="/template-approval"
