@@ -100,9 +100,9 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
 
   if (loading || fetchingTransactions) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center justify-center h-96">
-          <p className="text-lg text-gray-600">Loading your transactions...</p>
+          <p className="text-lg text-gray-600 dark:text-gray-400">Loading your transactions...</p>
         </div>
       </div>
     );
@@ -163,15 +163,15 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
      
       
       <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-2">
             Welcome, {user?.username}!
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-400">
             Add your bank SMS messages to track transactions
           </p>
           
@@ -200,17 +200,17 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
         </div>
 
         {/* SMS Input Form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 mb-6 border border-gray-100 dark:border-gray-700">
           <form onSubmit={handleParse}>
             <div className="mb-4">
-              <label htmlFor="bank-address" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="bank-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Bank Address / SMS ID
               </label>
               <select
                 id="bank-address"
                 value={bankAddress}
                 onChange={(e) => setBankAddress(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
               >
                 {bankAddresses.length === 0 ? (
                   <option value="">Loading bank addresses...</option>
@@ -224,7 +224,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
               </select>
             </div>
             
-            <label htmlFor="sms-input" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="sms-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Bank SMS Message
             </label>
             <textarea
@@ -233,11 +233,11 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
               value={smsText}
               onChange={(e) => setSmsText(e.target.value)}
               placeholder="Paste your SMS here...&#10;Example: Your A/c XX5678 debited for INR 2,500.00 on 10-Jan-26 via UPI to ZOMATO. Avl Bal: INR 15,420.50. Ref No: 60123456789 - HDFC Bank"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary resize-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-primary focus:border-primary resize-none"
             />
             
             {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>
             )}
 
             <div className="mt-4 flex gap-4">
@@ -251,7 +251,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
               <button
                 type="button"
                 onClick={handleClear}
-                className="px-6 py-3 border border-gray-300 rounded-full font-semibold text-gray-700 hover:bg-gray-100 transition duration-300"
+                className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-full font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-300"
               >
                 Clear
               </button>
@@ -261,28 +261,28 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
 
         {/* Parsed Data Preview */}
         {parsedData && (
-         <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-green-500">
+         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 mb-6 border-2 border-green-500 dark:border-tertiary">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">✓ Transaction Added Successfully!</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">✓ Transaction Added Successfully!</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Merchant</label>
-                  <p className="text-lg font-semibold text-gray-900">{parsedData.merchant || 'N/A'}</p>
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Merchant</label>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{parsedData.merchant || 'N/A'}</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Amount</label>
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
                   <p className="text-xl font-bold text-primary">
                     ₹{parsedData.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
                   </p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Type</label>
-                  <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-secondary text-primary">
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
+                  <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-secondary text-primary dark:bg-gray-700 dark:text-secondary">
                     {parsedData.type || 'N/A'}
                   </span>
                 </div>
@@ -291,30 +291,30 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
               <div className="space-y-3">
                 {parsedData.date && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Date</label>
-                    <p className="text-lg font-semibold text-gray-900">{parsedData.date}</p>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Date</label>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{parsedData.date}</p>
                   </div>
                 )}
                 
                 {parsedData.bankName && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Bank</label>
-                    <p className="text-lg font-semibold text-gray-900">{parsedData.bankName}</p>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Bank</label>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{parsedData.bankName}</p>
                   </div>
                 )}
                 
                 {parsedData.accountNumber && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Account</label>
-                    <p className="text-lg font-semibold text-gray-900">{parsedData.accountNumber}</p>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Account</label>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{parsedData.accountNumber}</p>
                   </div>
                 )}
               </div>
             </div>
             
-            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-              <label className="block text-xs font-medium text-gray-500 mb-1">SMS Message</label>
-              <p className="text-sm text-gray-700 break-words">{parsedData.smsMessage}</p>
+            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">SMS Message</label>
+              <p className="text-sm text-gray-700 dark:text-gray-300 break-words">{parsedData.smsMessage}</p>
             </div>
           </div>
         )}

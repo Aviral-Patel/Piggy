@@ -44,14 +44,14 @@ const FeatureSection = () => {
   ];
 
   return (
-    <div className=" py-16 md:py-24">
+    <div className="py-16 md:py-24 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-950 mb-4">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-950 dark:text-gray-100 mb-4">
             Fintech SMS-to-Ledger <span className="text-tertiary">Engine</span>
           </h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Transform unstructured bank SMS alerts into structured financial data with our
             comprehensive Management Portal and Parsing Engine. Maintain accurate Personal Finance
             Management through automated transaction tracking across multiple banks.
@@ -63,7 +63,7 @@ const FeatureSection = () => {
           {features.map((feature) => (
             <div
               key={feature.id}
-              className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 border border-gray-100"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-950/30 p-8 hover:shadow-xl dark:hover:shadow-gray-950/50 transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
             >
               {/* Icon */}
               <div className="mb-4">
@@ -71,12 +71,12 @@ const FeatureSection = () => {
               </div>
 
               {/* Title */}
-              <h3 className="text-2xl font-bold text-gray-950 mb-4">
+              <h3 className="text-2xl font-bold text-gray-950 dark:text-gray-100 mb-4">
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p className="text-gray-700 mb-6 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
                 {feature.description}
               </p>
 
@@ -85,7 +85,7 @@ const FeatureSection = () => {
                 {feature.details.map((detail, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-tertiary mr-2 mt-1">✓</span>
-                    <span className="text-gray-600 text-sm">{detail}</span>
+                    <span className="text-gray-600 dark:text-gray-400 text-sm">{detail}</span>
                   </li>
                 ))}
               </ul>

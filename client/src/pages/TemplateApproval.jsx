@@ -64,9 +64,9 @@ const TemplateApproval = () => {
 
   const getStatusBadge = (status) => {
     const statusStyles = {
-      PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      APPROVED: 'bg-green-100 text-green-800 border-green-300',
-      REJECTED: 'bg-red-100 text-red-800 border-red-300'
+      PENDING: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700',
+      APPROVED: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700',
+      REJECTED: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700'
     };
 
     return (
@@ -78,40 +78,40 @@ const TemplateApproval = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-lg text-gray-600">Loading pending patterns...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400">Loading pending patterns...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">Checker</h1>
+          <h1 className="text-3xl font-bold text-primary dark:text-secondary">Checker</h1>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
 
         {filteredTemplates.length === 0 ? (
-          <div className="bg-gray-50 rounded-lg p-12 text-center">
-            <p className="text-gray-600 text-lg">No pending patterns found.</p>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">No pending patterns found.</p>
           </div>
         ) : (
           <div className="space-y-6">
             {filteredTemplates.map((template) => (
               <div
                 key={template.id}
-                className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition"
+                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm dark:shadow-gray-950/30 border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-gray-950/50 transition"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
-                      <h3 className="text-xl font-semibold text-primary">
+                      <h3 className="text-xl font-semibold text-primary dark:text-secondary">
                         Pattern #{template.id}
                       </h3>
                       {getStatusBadge(template.status)}
@@ -130,22 +130,22 @@ const TemplateApproval = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="bg-white rounded-md p-4 border border-gray-300">
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  <div className="bg-white dark:bg-gray-700 rounded-md p-4 border border-gray-300 dark:border-gray-600">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                       Sample Message
                     </label>
-                    <div className="bg-gray-50 rounded p-3 max-h-32 overflow-y-auto">
-                      <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                    <div className="bg-gray-50 dark:bg-gray-600 rounded p-3 max-h-32 overflow-y-auto">
+                      <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
                         {template.message}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white rounded-md p-4 border border-gray-300">
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  <div className="bg-white dark:bg-gray-700 rounded-md p-4 border border-gray-300 dark:border-gray-600">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                       Regex Pattern
                     </label>
-                    <div className="bg-gray-50 rounded p-3 max-h-32 overflow-y-auto">
-                      <code className="text-xs text-gray-800 font-mono leading-relaxed break-all">
+                    <div className="bg-gray-50 dark:bg-gray-600 rounded p-3 max-h-32 overflow-y-auto">
+                      <code className="text-xs text-gray-800 dark:text-gray-200 font-mono leading-relaxed break-all">
                         {template.regexPattern}
                       </code>
                     </div>
@@ -157,19 +157,19 @@ const TemplateApproval = () => {
         )}
 
         {/* Summary Stats */}
-        <div className="mt-8 bg-secondary rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-primary mb-4">Summary</h3>
+        <div className="mt-8 bg-secondary dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-primary dark:text-secondary mb-4">Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-            <div className="bg-white rounded-md p-4 text-center">
-              <p className="text-2xl font-bold text-yellow-600">
+            <div className="bg-white dark:bg-gray-700 rounded-md p-4 text-center border border-gray-200 dark:border-gray-600">
+              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 {filteredTemplates.length}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Pending Patterns</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Pending Patterns</p>
             </div>
           </div>
         </div>
       </div>
-    
+
     </div>
   );
 };
