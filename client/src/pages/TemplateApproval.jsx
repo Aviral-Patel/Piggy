@@ -40,12 +40,21 @@ const TemplateApproval = () => {
   };
 
   const handleCheck = (template) => {
-    // Navigate to SMSParser with pattern and message data
+    // Navigate to SMSParser with all pattern data
     navigate('/sms-parser', {
       state: {
+        id: template.id,
+        patternId: template.id,
+        bankAddress: template.bankAddress,
+        bankName: template.bankName,
+        regexPattern: template.regexPattern,
         pattern: template.regexPattern,
+        message: template.message,
         sampleMsg: template.message,
-        patternId: template.id
+        merchantType: template.merchantType,
+        msgType: template.merchantType,
+        category: template.category,
+        status: template.status
       }
     });
   };
