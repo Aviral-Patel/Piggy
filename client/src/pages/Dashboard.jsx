@@ -50,14 +50,20 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
   useEffect(() => {
     const fetchBankAddresses = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/bank-addresses', {
+        const response = await axios.get('http://localhost:8080/api/patterns/bank-addresses', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setBankAddresses(response.data);
-        if (response.data.length > 0) {
-          setBankAddress(response.data[0].address);
+        // Transform the response to match the expected format
+        const transformedData = response.data.map(item => ({
+          id: item.address, // Use address as id since we don't have separate id
+          address: item.address,
+          bankName: item.bankName
+        }));
+        setBankAddresses(transformedData);
+        if (transformedData.length > 0) {
+          setBankAddress(transformedData[0].address);
         }
       } catch (err) {
         console.error('Error fetching bank addresses:', err);
