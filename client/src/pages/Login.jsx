@@ -19,7 +19,7 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8080/api/auth/login', formData);
@@ -27,30 +27,30 @@ const Login = () => {
         username: formData.username,
         role: response.data.role, // Include role from response
       };
-      
+
       login(userData, response.data.token);
       console.log('Login successful:', response.data);
-      
+
       navigate('/dashboard');
     } catch (error) {
       console.error('Error logging in:', error);
     }
-    
+
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Logo and Title */}
         <div className="text-center">
           <div className="flex justify-center items-center gap-0.5 mb-4">
             <img src={logo} alt="Piggy Logo" className="h-14 w-14" />
-            <h2 className="text-3xl font-bold italic text-primary">Piggy</h2>
+            <h2 className="text-3xl font-bold italic text-primary dark:text-secondary">Piggy</h2>
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">Sign in to your account</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Or{' '}
-            <Link to="/signup" className="font-medium text-primary hover:text-tertiary">
+            <Link to="/signup" className="font-medium text-primary dark:text-secondary hover:text-tertiary">
               create a new account
             </Link>
           </p>
@@ -60,13 +60,13 @@ const Login = () => {
         <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-            <input
+              <input
                 id="username"
                 name="username"
                 type="text"
                 autoComplete="name"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Username"
                 value={formData.username}
                 onChange={handleChange}
@@ -82,7 +82,7 @@ const Login = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}

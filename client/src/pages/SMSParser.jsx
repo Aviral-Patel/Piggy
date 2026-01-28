@@ -7,7 +7,7 @@ const SMSParser = () => {
   const location = useLocation();
   const passedData = location.state || {};
   const { user, token } = useUser();
-  
+
   // Determine user role (normalize to lowercase for comparison)
   const userRole = user?.role?.toLowerCase();
 
@@ -59,12 +59,12 @@ const SMSParser = () => {
 
   const handleMatch = async () => {
     const { regexPattern, message } = formData;
-    
+
     if (!regexPattern.trim()) {
       setMatchResult({ success: false, message: 'Please enter a regex pattern' });
       return;
     }
-    
+
     if (!message.trim()) {
       setMatchResult({ success: false, message: 'Please enter a sample message' });
       return;
@@ -156,7 +156,7 @@ const SMSParser = () => {
 
       setSuccess('Pattern sent for approval successfully!');
       setPatternId(response.data.id);
-      
+
       // Clear form after successful save
       setTimeout(() => {
         setFormData({
@@ -206,7 +206,7 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern approved successfully!');
-      
+
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
@@ -241,7 +241,7 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern rejected successfully!');
-      
+
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
@@ -263,9 +263,9 @@ const SMSParser = () => {
     }[cols] || 'md:grid-cols-2';
 
     return (
-      <div className="bg-gray-50 rounded-lg p-6 mb-6 shadow-sm">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-sm dark:shadow-gray-950/30 border border-gray-100 dark:border-gray-700">
         {title && (
-          <h3 className="text-lg font-semibold text-primary mb-4 pb-2 border-b-2 border-secondary">
+          <h3 className="text-lg font-semibold text-primary dark:text-secondary mb-4 pb-2 border-b-2 border-secondary dark:border-gray-600">
             {title}
           </h3>
         )}
@@ -278,7 +278,7 @@ const SMSParser = () => {
 
   const InputField = ({ label, name, value, onChange, type = 'text', placeholder = '', className = '', disabled = false }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <input
         type={type}
         name={name}
@@ -286,20 +286,20 @@ const SMSParser = () => {
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`}
+        className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
       />
     </div>
   );
 
   const SelectField = ({ label, name, value, onChange, options, className = '', disabled = false }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <select
         name={name}
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'} ${className}`}
+        className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} text-gray-900 dark:text-gray-100 ${className}`}
       >
         {options.map(option => (
           <option key={option} value={option}>{option}</option>
@@ -310,7 +310,7 @@ const SMSParser = () => {
 
   const TextAreaField = ({ label, name, value, onChange, rows = 4, className = '', highlight = false, placeholder = '', disabled = false }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
       <textarea
         name={name}
         value={value}
@@ -318,7 +318,7 @@ const SMSParser = () => {
         rows={rows}
         placeholder={placeholder}
         disabled={disabled}
-        className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`}
+        className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300 dark:border-gray-600'} rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
       />
     </div>
   );
@@ -330,19 +330,19 @@ const SMSParser = () => {
         name={name}
         checked={checked}
         onChange={onChange}
-        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
+        className="w-4 h-4 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary focus:ring-2 bg-white dark:bg-gray-700"
       />
-      <label className="ml-2 text-sm font-medium text-gray-700">{label}</label>
+      <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">SMS Message Template Information</h1>
+          <h1 className="text-3xl font-bold text-primary dark:text-secondary">SMS Message Template Information</h1>
           {userRole === 'checker' && patternId && (
-            <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+            <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-full text-sm font-semibold border border-yellow-300 dark:border-yellow-700">
               Review Mode - Pattern #{patternId}
             </span>
           )}
@@ -398,14 +398,13 @@ const SMSParser = () => {
             disabled={userRole === 'checker'}
           />
           {matchResult && (
-            <div className={`mt-4 p-4 rounded-md ${
-              matchResult.success 
-                ? 'bg-green-50 border border-green-200 text-green-800' 
-                : 'bg-red-50 border border-red-200 text-red-800'
-            }`}>
+            <div className={`mt-4 p-4 rounded-md ${matchResult.success
+                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+              }`}>
               <p className="font-medium">{matchResult.message}</p>
               {matchResult.matchedText && (
-                <p className="mt-2 text-sm font-mono bg-white p-2 rounded border border-green-300">
+                <p className="mt-2 text-sm font-mono bg-white dark:bg-gray-700 p-2 rounded border border-green-300 dark:border-green-700 text-gray-900 dark:text-gray-100">
                   Matched: {matchResult.matchedText.substring(0, 100)}{matchResult.matchedText.length > 100 ? '...' : ''}
                 </p>
               )}
@@ -443,12 +442,12 @@ const SMSParser = () => {
 
         {/* Error and Success Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg mb-6">
             {success}
           </div>
         )}

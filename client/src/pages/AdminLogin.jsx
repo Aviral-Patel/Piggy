@@ -55,10 +55,10 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Login Card */}
-        <div className="bg-white rounded-b-lg shadow-xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-xl dark:shadow-gray-950/50 overflow-hidden border border-gray-200 dark:border-gray-700">
           {/* Header Section - Primary Color */}
           <div className="bg-primary py-8 px-6 text-center">
             <h1 className="text-2xl font-bold text-white uppercase mb-2">
@@ -74,7 +74,7 @@ const AdminLogin = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Username Input */}
               <div className="relative">
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Username
                 </label>
                 <div className="relative">
@@ -85,12 +85,12 @@ const AdminLogin = () => {
                     required
                     value={formData.username}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                     placeholder="Enter your username"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <svg
-                      className="h-5 w-5 text-gray-400"
+                      className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -108,7 +108,7 @@ const AdminLogin = () => {
 
               {/* Password Input */}
               <div className="relative">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -119,12 +119,12 @@ const AdminLogin = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    className="w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                     placeholder="Enter your password"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <svg
-                      className="h-5 w-5 text-gray-400"
+                      className="h-5 w-5 text-gray-400 dark:text-gray-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -141,7 +141,7 @@ const AdminLogin = () => {
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm">
                   {error}
                 </div>
               )}
