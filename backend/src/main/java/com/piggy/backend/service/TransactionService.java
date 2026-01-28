@@ -28,14 +28,14 @@ public class TransactionService {
         this.smsRegexParser = smsRegexParser;
     }
 
-    // MODIFY THIS: Parse SMS and save transaction for a specific user
-    public TransactionDTO parseAndSave(String sms, String username) {
+    // Parse SMS and save transaction for a specific user with bank address
+    public TransactionDTO parseAndSave(String sms, String bankAddress, String username) {
         // Find the user
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Parse the SMS
-        Transaction transaction = smsRegexParser.parse(sms);
+        // Parse the SMS with bank address
+        Transaction transaction = smsRegexParser.parse(sms, bankAddress);
         
         // Associate with user
         transaction.setUser(user);

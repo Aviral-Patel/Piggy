@@ -1,5 +1,6 @@
 package com.piggy.backend.service;
 
+import com.piggy.backend.entity.BankAddress;
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.PatternStatus;
 import com.piggy.backend.repository.PatternRepository;
@@ -9,13 +10,20 @@ import java.util.List;
 @Service
 public class PatternService {
     private final PatternRepository patternRepository;
+    private final BankAddressService bankAddressService;
 
-    public PatternService(PatternRepository patternRepository) {
+    public PatternService(PatternRepository patternRepository, BankAddressService bankAddressService) {
         this.patternRepository = patternRepository;
+        this.bankAddressService = bankAddressService;
     }
 
     public List<Pattern> getApprovedPatterns() {
         return patternRepository.findByStatus(PatternStatus.APPROVED);
+    }
+
+    public List<Pattern> getApprovedPatternsByBankAddress(String addressString) {
+        BankAddress bankAddress = bankAddressService.getBankAddressByAddress(addressString);
+        return patternRepository.findByBankAddressAndStatus(bankAddress, PatternStatus.APPROVED);
     }
 
     public List<Pattern> getPendingPatterns() {
@@ -32,6 +40,4 @@ public class PatternService {
         pattern.setStatus(status);
         return patternRepository.save(pattern);
     }
-
-    // Add more methods as needed
 }

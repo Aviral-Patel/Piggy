@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 
 const TemplateApproval = () => {
   const navigate = useNavigate();
-  const { token } = useUser();
+  const { user, token } = useUser();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Double-check role access at component level
+  const userRole = user?.role?.toLowerCase();
+  if (!user || userRole !== 'checker') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   useEffect(() => {
     fetchPendingPatterns();

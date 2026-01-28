@@ -10,6 +10,10 @@ public class Pattern {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_address_id", nullable = false)
+    private BankAddress bankAddress;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String regexPattern;
 
@@ -23,6 +27,9 @@ public class Pattern {
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public BankAddress getBankAddress() { return bankAddress; }
+    public void setBankAddress(BankAddress bankAddress) { this.bankAddress = bankAddress; }
 
     public String getRegexPattern() { return regexPattern; }
     public void setRegexPattern(String regexPattern) { this.regexPattern = regexPattern; }

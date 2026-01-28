@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 const SMSParser = () => {
@@ -9,6 +9,11 @@ const SMSParser = () => {
   
   // Determine user role (normalize to lowercase for comparison)
   const userRole = user?.role?.toLowerCase();
+
+  // Double-check role access at component level
+  if (!user || (userRole !== 'maker' && userRole !== 'checker')) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Sample data - in real app, this would come from props or API
   const [formData, setFormData] = useState({
