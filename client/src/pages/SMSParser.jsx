@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Footer from '../components/Footer.jsx';
 
 const SMSParser = () => {
   // Sample data - in real app, this would come from props or API
@@ -395,7 +394,6 @@ const SMSParser = () => {
           </button>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
