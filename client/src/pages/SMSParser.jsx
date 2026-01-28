@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const SMSParser = () => {
+  const location = useLocation();
+  const passedData = location.state || {};
+  const { user } = useUser();
+  
+  // Determine user role (normalize to lowercase for comparison)
+  const userRole = user?.role?.toLowerCase();
+
   // Sample data - in real app, this would come from props or API
   const [formData, setFormData] = useState({
     // General Information
@@ -19,8 +28,8 @@ const SMSParser = () => {
     templateType: 'Processed',
 
     // Pattern and Sample
-    pattern: '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
-    sampleMsg: 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
+    pattern: passedData.pattern || '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
+    sampleMsg: passedData.sampleMsg || 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
 
     // Transaction Data
     bankAcId: '1',
@@ -254,24 +263,49 @@ const SMSParser = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4 justify-end mt-6">
-          <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
-            Match
-          </button>
-          <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
-            Save
-          </button>
-          <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
-            Test
-          </button>
-          <button className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 font-semibold">
-            Delete
-          </button>
-          <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
-            Reprocess
-          </button>
-          <button className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 font-semibold">
-            Cancel
-          </button>
+          {userRole === 'checker' ? (
+            <>
+              <button className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 font-semibold">
+                Approve
+              </button>
+              <button className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 font-semibold">
+                Reject
+              </button>
+              <button className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 font-semibold">
+                Cancel
+              </button>
+            </>
+          ) : userRole === 'maker' ? (
+            <>
+              <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
+                Send to Approve
+              </button>
+              <button className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 font-semibold">
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
+                Match
+              </button>
+              <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
+                Save
+              </button>
+              <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
+                Test
+              </button>
+              <button className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 font-semibold">
+                Delete
+              </button>
+              <button className="px-6 py-2 bg-primary text-white rounded-md hover:bg-tertiary transition duration-300 font-semibold">
+                Reprocess
+              </button>
+              <button className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-300 font-semibold">
+                Cancel
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
