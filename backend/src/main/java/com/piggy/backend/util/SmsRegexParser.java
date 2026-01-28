@@ -19,8 +19,13 @@ public class SmsRegexParser {
         this.patternService = patternService;
     }
 
-    public Transaction parse(String sms) {
-        List<Pattern> approvedPatterns = patternService.getApprovedPatterns();
+    public Transaction parse(String sms, String bankAddress) {
+        List<Pattern> approvedPatterns = patternService.getApprovedPatternsByBankAddress(bankAddress);
+        
+        if (approvedPatterns.isEmpty()) {
+            throw new RuntimeException("No approved patterns found for bank address: " + bankAddress);
+        }
+        
         for (Pattern pattern : approvedPatterns) {
             java.util.regex.Pattern regex = java.util.regex.Pattern.compile(
                     pattern.getRegexPattern(),
@@ -29,17 +34,22 @@ public class SmsRegexParser {
             Matcher matcher = regex.matcher(sms);
 
             if (matcher.find()) {
-
                 return buildTransaction(matcher, pattern.getMessage());
             }
         }
 
-        throw new RuntimeException("No matching pattern found for SMS");
+        throw new RuntimeException("No matching pattern found for SMS from bank address: " + bankAddress);
     }
 
     private Transaction buildTransaction(Matcher matcher, String message) {
         Transaction transaction = new Transaction();
-        transaction.setType(matcher.group("type").toUpperCase());
+        
+        // Try to get type, default to "DEBITED" if not found
+        try {
+            transaction.setType(matcher.group("type").toUpperCase());
+        } catch (Exception e) {
+            transaction.setType("DEBITED"); // Default type
+        }
 
         String amountStr = matcher.group("amount").replace(",", "");
         transaction.setAmount(new BigDecimal(amountStr));

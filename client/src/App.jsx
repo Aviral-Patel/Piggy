@@ -11,6 +11,7 @@ import AdminLogin from './pages/AdminLogin.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 function App() {
   return (
@@ -21,8 +22,22 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/sms-parser" element={<SMSParser />} />
-        <Route path="/template-approval" element={<TemplateApproval />} />
+        <Route 
+          path="/sms-parser" 
+          element={
+            <ProtectedRoute allowedRoles={['MAKER', 'CHECKER']}>
+              <SMSParser />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/template-approval" 
+          element={
+            <ProtectedRoute allowedRoles={['CHECKER']}>
+              <TemplateApproval />
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>

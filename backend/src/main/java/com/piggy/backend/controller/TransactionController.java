@@ -19,14 +19,20 @@ public class TransactionController {
         this.service = service;
     }
 
-    // MODIFY THIS: Parse SMS and save transaction
+    // Parse SMS and save transaction with bank address
     @PostMapping("/parse")
     public TransactionDTO parseSms(
             @RequestBody Map<String, String> request,
             Authentication authentication) {
         String sms = request.get("sms");
+        String bankAddress = request.get("bankAddress");
         String username = authentication.getName(); // Extract username from JWT
-        return service.parseAndSave(sms, username);
+        
+        if (bankAddress == null || bankAddress.isEmpty()) {
+            throw new RuntimeException("Bank address is required");
+        }
+        
+        return service.parseAndSave(sms, bankAddress, username);
     }
 
     // ADD THIS: Get all transactions for logged-in user

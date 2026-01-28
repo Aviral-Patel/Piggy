@@ -7,13 +7,39 @@ import TransactionCards from '../components/TransactionCards.jsx';
 const Dashboard = () => {
   const navigate = useNavigate();
   
-const { user, token, loading, isAuthenticated } = useUser();
+const { user, token, loading, isAuthenticated, updateUser } = useUser();
 const [smsText, setSmsText] = useState('');
+const [bankAddress, setBankAddress] = useState('');
+const [bankAddresses, setBankAddresses] = useState([]);
 const [transactions, setTransactions] = useState([]);
 const [parsedData, setParsedData] = useState(null);
 const [error, setError] = useState('');
-const [parseLoading, setParseLoading] = useState(false);  // ADD THIS NEW STATE
+const [parseLoading, setParseLoading] = useState(false);
 const [fetchingTransactions, setFetchingTransactions] = useState(true);
+  
+  // Fetch user role if missing
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (!loading && isAuthenticated() && token && (!user?.role || user.role === 'undefined')) {
+        try {
+          const response = await axios.get('http://localhost:8080/api/auth/me', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          // Update user with role
+          updateUser({
+            ...user,
+            role: response.data.role,
+          });
+        } catch (err) {
+          console.error('Error fetching user role:', err);
+        }
+      }
+    };
+    fetchUserRole();
+  }, [loading, isAuthenticated, token, user, updateUser]);
+
   useEffect(() => {
     // WAIT for UserContext to finish loading
     if (!loading && !isAuthenticated()) {
@@ -22,6 +48,28 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
   }, [loading, isAuthenticated, navigate]);  // ADD 'loading' to dependency array
 
   useEffect(() => {
+    const fetchBankAddresses = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/patterns/bank-addresses', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // Transform the response to match the expected format
+        const transformedData = response.data.map(item => ({
+          id: item.address, // Use address as id since we don't have separate id
+          address: item.address,
+          bankName: item.bankName
+        }));
+        setBankAddresses(transformedData);
+        if (transformedData.length > 0) {
+          setBankAddress(transformedData[0].address);
+        }
+      } catch (err) {
+        console.error('Error fetching bank addresses:', err);
+      }
+    };
+
     const fetchTransactions = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/transactions', {
@@ -42,6 +90,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
   
     // ONLY fetch if context has finished loading AND user is authenticated
     if (!loading && isAuthenticated()) {
+      fetchBankAddresses();
       fetchTransactions();
     } else if (!loading) {
       // Context loaded but not authenticated
@@ -69,37 +118,41 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
       return;
     }
   
-    setParseLoading(true);  // CHANGE: Use parseLoading instead of loading
+    setParseLoading(true);
     
     try {
       const response = await axios.post(
         'http://localhost:8080/api/transactions/parse',
-        { sms: smsText },
+        { sms: smsText, bankAddress: bankAddress },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',  // ADD THIS - explicitly set content type
+            'Content-Type': 'application/json',
           },
         }
       );
       
-      console.log('Parse response:', response.data);  // ADD THIS - for debugging
-      setParsedData(response.data);
+      console.log('Parse response:', response.data);
+      const transactionWithSms = {
+        ...response.data,
+        smsMessage: smsText
+      };
+      setParsedData(transactionWithSms);
+      
+      // Automatically add transaction to the list
+      setTransactions([transactionWithSms, ...transactions]);
+      
+      // Clear form after successful parse
+      setTimeout(() => {
+        setSmsText('');
+        setParsedData(null);
+      }, 2000);
     } catch (err) {
       console.error('Error parsing SMS:', err);
-      console.error('Error response:', err.response);  // ADD THIS - for debugging
+      console.error('Error response:', err.response);
       setError(err.response?.data?.message || 'Failed to parse SMS. Please try again.');
     } finally {
-      setParseLoading(false);  // CHANGE: Use parseLoading instead of loading
-    }
-  };
-
-  const handleAddTransaction = () => {
-    if (parsedData) {
-      setTransactions([...transactions, parsedData]);
-      setParsedData(null);
-      setSmsText('');
-      setError('');
+      setParseLoading(false);
     }
   };
 
@@ -123,7 +176,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
           </p>
           
           {/* Role-based navigation buttons */}
-          {user?.role === 'MAKER' && (
+          {user?.role?.toLowerCase() === 'maker' && (
             <div className="mt-6">
               <Link
                 to="/sms-parser"
@@ -134,7 +187,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
             </div>
           )}
           
-          {user?.role === 'CHECKER' && (
+          {user?.role?.toLowerCase() === 'checker' && (
             <div className="mt-6">
               <Link
                 to="/template-approval"
@@ -149,6 +202,28 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
         {/* SMS Input Form */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <form onSubmit={handleParse}>
+            <div className="mb-4">
+              <label htmlFor="bank-address" className="block text-sm font-medium text-gray-700 mb-2">
+                Bank Address / SMS ID
+              </label>
+              <select
+                id="bank-address"
+                value={bankAddress}
+                onChange={(e) => setBankAddress(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+              >
+                {bankAddresses.length === 0 ? (
+                  <option value="">Loading bank addresses...</option>
+                ) : (
+                  bankAddresses.map((bank) => (
+                    <option key={bank.id} value={bank.address}>
+                      {bank.address} ({bank.bankName})
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+            
             <label htmlFor="sms-input" className="block text-sm font-medium text-gray-700 mb-2">
               Bank SMS Message
             </label>
@@ -187,10 +262,12 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
         {/* Parsed Data Preview */}
         {parsedData && (
          <div className="bg-white rounded-lg shadow-md p-6 mb-6 border-2 border-green-500">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Parsed Transaction</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">✓ Transaction Added Successfully!</h2>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Merchant</label>
                   <p className="text-lg font-semibold text-gray-900">{parsedData.merchant || 'N/A'}</p>
@@ -204,21 +281,14 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Type</label>
                   <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-secondary text-primary">
-                    {parsedData.category || 'N/A'}
+                    {parsedData.type || 'N/A'}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {parsedData.type && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Transaction Type</label>
-                    <p className="text-lg font-semibold text-gray-900">{parsedData.type}</p>
-                  </div>
-                )}
-                
+              <div className="space-y-3">
                 {parsedData.date && (
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Date</label>
@@ -226,28 +296,25 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
                   </div>
                 )}
                 
-                {parsedData.bank && (
+                {parsedData.bankName && (
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Bank</label>
-                    <p className="text-lg font-semibold text-gray-900">{parsedData.bank}</p>
+                    <p className="text-lg font-semibold text-gray-900">{parsedData.bankName}</p>
+                  </div>
+                )}
+                
+                {parsedData.accountNumber && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">Account</label>
+                    <p className="text-lg font-semibold text-gray-900">{parsedData.accountNumber}</p>
                   </div>
                 )}
               </div>
             </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={handleAddTransaction}
-                className="flex-1 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-tertiary transition duration-300"
-              >
-                Add Transaction
-              </button>
-              <button
-                onClick={handleClear}
-                className="px-6 py-3 border border-gray-300 rounded-full font-semibold text-gray-700 hover:bg-gray-100 transition duration-300"
-              >
-                Cancel
-              </button>
+            
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <label className="block text-xs font-medium text-gray-500 mb-1">SMS Message</label>
+              <p className="text-sm text-gray-700 break-words">{parsedData.smsMessage}</p>
             </div>
           </div>
         )}

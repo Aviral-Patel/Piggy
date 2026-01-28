@@ -26,7 +26,9 @@ const AdminDashboard = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUsers(response.data);
+      // Only show users with role "USER" - makers and checkers cannot be changed
+      const userRoleUsers = response.data.filter(user => user.role === 'USER');
+      setUsers(userRoleUsers);
     } catch (err) {
       console.error('Error fetching users:', err);
       if (err.response?.status === 401) {
