@@ -16,6 +16,9 @@ export default function Navbar() {
   const handleLogout = () => {
     if (isAdminAuthenticated()) {
       localStorage.removeItem('adminToken');
+      // Also clear any user tokens to prevent redirect to dashboard
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       navigate('/');
     } else {
       logout();
