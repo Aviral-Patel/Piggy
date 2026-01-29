@@ -44,7 +44,7 @@ const defaultBankAddresses = [
   { id: 'GENERIC', address: 'GENERIC', bankName: 'Generic Bank' },
 ];
 
-const [bankAddress, setBankAddress] = useState(defaultBankAddresses[0].address);
+const [bankAddress, setBankAddress] = useState('');
 const [bankAddresses, setBankAddresses] = useState(defaultBankAddresses);
 const [transactions, setTransactions] = useState([]);
 const [parsedData, setParsedData] = useState(null);
@@ -208,17 +208,10 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
         // Update bank addresses with API data if available, otherwise keep default
         if (transformedData.length > 0) {
           setBankAddresses(transformedData);
-          setBankAddress(transformedData[0].address);
-        } else if (!bankAddress && defaultBankAddresses.length > 0) {
-          setBankAddress(defaultBankAddresses[0].address);
         }
       } catch (err) {
         console.error('Error fetching bank addresses:', err);
         toast.error('Failed to load bank addresses. Using default list.');
-        // Keep using default bank addresses on error
-        if (!bankAddress && defaultBankAddresses.length > 0) {
-          setBankAddress(defaultBankAddresses[0].address);
-        }
       }
     };
 
@@ -472,22 +465,13 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                   <label htmlFor="bank-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Bank Address / SMS ID
                   </label>
-                  <select
+                  <input
                     id="bank-address"
+                    type="text"
                     value={bankAddress}
                     onChange={(e) => setBankAddress(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary"
-                  >
-                    {bankAddresses.length === 0 ? (
-                      <option value="">Loading bank addresses...</option>
-                    ) : (
-                      bankAddresses.map((bank) => (
-                        <option key={bank.id} value={bank.address}>
-                          {bank.address} ({bank.bankName})
-                        </option>
-                      ))
-                    )}
-                  </select>
+                  />
                 </div>
                 
                 <label htmlFor="sms-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -498,7 +482,6 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                   rows="5"
                   value={smsText}
                   onChange={(e) => setSmsText(e.target.value)}
-                  placeholder="Paste your SMS here...&#10;Example: Your A/c XX5678 debited for INR 2,500.00 on 10-Jan-26 via UPI to ZOMATO. Avl Bal: INR 15,420.50. Ref No: 60123456789 - HDFC Bank"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-primary focus:border-primary resize-none"
                 />
                 
@@ -531,16 +514,8 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                 Bulk Upload (JSON)
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Upload a JSON file with multiple SMS messages. Expected format:
+                Upload a JSON file with multiple SMS messages.
               </p>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
-                <code className="text-xs text-gray-800 dark:text-gray-200">
-                  [<br />
-                  &nbsp;&nbsp;&#123; "address": "BZ-SBIINB", "message": "Your SMS text here..." &#125;,<br />
-                  &nbsp;&nbsp;&#123; "address": "VM-HDFCBK", "message": "Another SMS text..." &#125;<br />
-                  ]
-                </code>
-              </div>
               
               <div className="flex items-center gap-4">
                 <label htmlFor="json-upload" className="flex-1">

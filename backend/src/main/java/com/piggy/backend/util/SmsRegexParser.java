@@ -169,8 +169,9 @@ public class SmsRegexParser {
             return detectTypeFromContent(smsContent);
         }
         String u = type.toUpperCase();
-        if (u.contains("CREDIT") || "CREDITED".equals(u)) return TransactionType.CREDITED;
-        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u)) return TransactionType.DEBITED;
+        if (u.contains("CREDIT") || "CREDITED".equals(u) || u.contains("RECEIVED")) return TransactionType.CREDITED;
+        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u) || 
+            u.contains("USED") || u.contains("CHARGED") || u.contains("WITHDRAWN")) return TransactionType.DEBITED;
         if (u.contains("ALERT") || "ALERT".equals(u)) return TransactionType.ALERT;
         if (u.contains("REMINDER") || "REMINDER".equals(u)) return TransactionType.REMINDER;
         // If type is specified but not recognized, check content
@@ -196,11 +197,13 @@ public class SmsRegexParser {
             content.contains("credit to") ||
             content.contains("added to") ||
             content.matches(".*\\bcr\\b.*") || // CR = Credit
-            content.contains("refund")) {
+            content.contains("refund") ||
+            content.contains("payment received")) {
             return TransactionType.CREDITED;
         }
         
         // Check for DEBITED/SPENT keywords
+        // Including card transaction patterns
         if (content.contains("debited") || 
             content.contains("spent") || 
             content.contains("withdrawn") ||
@@ -208,7 +211,13 @@ public class SmsRegexParser {
             content.contains("transferred") ||
             content.contains("paid") ||
             content.contains("purchase") ||
-            content.matches(".*\\bdr\\b.*")) { // DR = Debit
+            content.matches(".*\\bdr\\b.*") || // DR = Debit
+            // Card transaction patterns
+            (content.contains("transaction") && (content.contains("debit card") || content.contains("credit card"))) ||
+            content.contains("has been used") ||
+            content.contains("has been spent") ||
+            content.contains("has been charged") ||
+            (content.matches(".*transaction of rs\\..*") && content.matches(".*(debit card|credit card).*"))) {
             return TransactionType.DEBITED;
         }
         
@@ -231,7 +240,9 @@ public class SmsRegexParser {
             content.contains("reported") ||
             content.contains("notification") ||
             content.contains("please ignore if") ||
-            content.contains("ignore if paid")) {
+            content.contains("ignore if paid") ||
+            content.contains("declined") ||
+            content.contains("limit exceeded")) {
             return TransactionType.ALERT;
         }
         
