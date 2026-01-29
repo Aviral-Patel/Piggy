@@ -188,7 +188,7 @@ const TransactionCards = ({ transactions }) => {
   }
 
   return (
-    <div className="mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 border border-gray-100 dark:border-gray-700 mb-6">
       <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
         Transactions ({filteredTransactions.length})
       </h2>
@@ -212,7 +212,7 @@ const TransactionCards = ({ transactions }) => {
       </div>
 
       {filteredTransactions.length === 0 ? (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-8 text-center border border-gray-100 dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm p-8 text-center border border-gray-200 dark:border-gray-600">
           <p className="text-gray-500 dark:text-gray-400">No {activeFilter} transactions found.</p>
         </div>
       ) : (
@@ -231,7 +231,7 @@ const TransactionCards = ({ transactions }) => {
                 key={cardId}
                 type="button"
                 onClick={() => setExpandedId(cardId)}
-                className="w-full text-left bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 hover:shadow-lg dark:hover:shadow-gray-950/50 transition-shadow border border-gray-200 dark:border-gray-700 cursor-pointer"
+                className="w-full text-left bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-600 cursor-pointer"
               >
                 <div className="p-4">
                   <div className="flex items-center gap-3">
