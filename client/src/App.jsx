@@ -16,8 +16,9 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+        <Navbar />
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
@@ -40,8 +41,9 @@ function App() {
         />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      </Routes>
-      <Footer />
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   )
 }

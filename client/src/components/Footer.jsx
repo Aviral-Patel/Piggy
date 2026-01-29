@@ -3,7 +3,7 @@ import logo from '../assets/p_round.png';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 text-gray-700">
+    <footer className="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-800">
       <div className="w-full px-4 py-12 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -15,9 +15,9 @@ const Footer = () => {
                   alt="Piggy Logo" 
                   className="h-14 w-14"
                 />
-                <h3 className="text-2xl font-bold italic text-primary">Piggy</h3>
+                <h3 className="text-2xl font-bold italic text-primary dark:text-secondary">Piggy</h3>
               </div>
-              <p className="text-gray-600 mb-4 max-w-md">
+              <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
                 Transform unstructured bank SMS alerts into structured financial data. 
                 Maintain accurate Personal Finance Management through automated transaction tracking.
               </p>
@@ -25,7 +25,7 @@ const Footer = () => {
 
             {/* Quick Links */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Quick Links</h4>
+              <h4 className="text-gray-900 dark:text-gray-100 font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
                 <li>
                   <a href="#home" className="hover:text-primary transition">Home</a>
@@ -44,7 +44,7 @@ const Footer = () => {
 
             {/* Resources */}
             <div>
-              <h4 className="text-gray-900 font-semibold mb-4">Resources</h4>
+              <h4 className="text-gray-900 dark:text-gray-100 font-semibold mb-4">Resources</h4>
               <ul className="space-y-2">
                 <li>
                   <a href="#docs" className="hover:text-primary transition">Documentation</a>
@@ -63,8 +63,8 @@ const Footer = () => {
           </div>
 
           {/* Bottom Bar */}
-          <div className="mt-8 pt-8 border-t border-gray-300 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-600 text-sm">
+          <div className="mt-8 pt-8 border-t border-gray-300 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
               © {new Date().getFullYear()} Piggy. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">

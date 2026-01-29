@@ -7,6 +7,13 @@
     <title>client</title>
   </head>
   <body>
+    <script>
+      (function() {
+        var theme = localStorage.getItem('piggy-theme');
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

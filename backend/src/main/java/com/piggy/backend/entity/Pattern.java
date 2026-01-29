@@ -22,11 +22,9 @@ public class Pattern {
     @Column(nullable = false)
     private String message;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String merchantType;
-
-    @Column
-    private String category;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,11 +46,8 @@ public class Pattern {
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 
-    public String getMerchantType() { return merchantType; }
-    public void setMerchantType(String merchantType) { this.merchantType = merchantType; }
-
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
     public PatternStatus getStatus() { return status; }
     public void setStatus(PatternStatus status) { this.status = status; }

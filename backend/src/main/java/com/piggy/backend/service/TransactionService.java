@@ -36,17 +36,15 @@ public class TransactionService {
 
         // Parse the SMS with bank address
         Transaction transaction = smsRegexParser.parse(sms, bankAddress);
-        
+        transaction.setSmsMessage(sms);
+
         // Associate with user
         transaction.setUser(user);
-        
+
         // Save to database
         repository.save(transaction);
 
-        return new TransactionDTO(
-                transaction.getType(),
-                transaction.getAmount(),
-                transaction.getMerchant());
+        return new TransactionDTO(transaction);
     }
 
     // ADD THIS: Get all transactions for a specific user

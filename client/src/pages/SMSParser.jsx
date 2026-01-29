@@ -3,20 +3,96 @@ import { useLocation, Navigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
+// Helper components defined outside SMSParser so they aren't recreated on each render (fixes input losing focus when typing)
+const FieldGroup = ({ title, children, cols = 2 }) => {
+  const gridColsClass = {
+    1: 'md:grid-cols-1',
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-3',
+    4: 'md:grid-cols-4',
+    5: 'md:grid-cols-5'
+  }[cols] || 'md:grid-cols-2';
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-sm dark:shadow-gray-950/30 border border-gray-100 dark:border-gray-700">
+      {title && (
+        <h3 className="text-lg font-semibold text-primary dark:text-secondary mb-4 pb-2 border-b-2 border-secondary dark:border-gray-600">
+          {title}
+        </h3>
+      )}
+      <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const InputField = ({ label, name, value, onChange, type = 'text', placeholder = '', className = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
+    />
+  </div>
+);
+
+const SelectField = ({ label, name, value, onChange, options, className = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} text-gray-900 dark:text-gray-100 ${className}`}
+    >
+      {options.map(option => (
+        <option key={option} value={option}>{option}</option>
+      ))}
+    </select>
+  </div>
+);
+
+const TextAreaField = ({ label, name, value, onChange, rows = 4, className = '', highlight = false, placeholder = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      rows={rows}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300 dark:border-gray-600'} rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
+    />
+  </div>
+);
+
+const CheckboxField = ({ label, name, checked, onChange }) => (
+  <div className="flex items-center">
+    <input
+      type="checkbox"
+      name={name}
+      checked={checked}
+      onChange={onChange}
+      className="w-4 h-4 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary focus:ring-2 bg-white dark:bg-gray-700"
+    />
+    <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+  </div>
+);
+
 const SMSParser = () => {
   const location = useLocation();
   const passedData = location.state || {};
-  const { user, token } = useUser();
-  
-  // Determine user role (normalize to lowercase for comparison)
-  const userRole = user?.role?.toLowerCase();
+  const { user, token, loading } = useUser();
 
-  // Double-check role access at component level
-  if (!user || (userRole !== 'maker' && userRole !== 'checker')) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // Sample data - in real app, this would come from props or API
+  // All hooks must run before any conditional return (Rules of Hooks)
   const [formData, setFormData] = useState({
     // General Information
     bankAddress: passedData.bankAddress || '',
@@ -24,12 +100,12 @@ const SMSParser = () => {
     merchantName: passedData.merchantName || '',
 
     // Transaction Details
-    msgType: passedData.msgType || '',
+    type: passedData.type || '',
     category: passedData.category || '',
 
     // Pattern and Sample
-    regexPattern: passedData.regexPattern || passedData.pattern || '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
-    message: passedData.message || passedData.sampleMsg || 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
+    regexPattern: passedData.regexPattern || passedData.pattern || '',
+    message: passedData.message || passedData.sampleMsg || '',
 
     // Editor Comments and Processed Result
     onDemand: false,
@@ -45,6 +121,19 @@ const SMSParser = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Role check and redirect after all hooks (avoid conditional hook calls)
+  const userRole = user?.role?.toLowerCase();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+  if (!user || (userRole !== 'maker' && userRole !== 'checker')) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -59,12 +148,12 @@ const SMSParser = () => {
 
   const handleMatch = async () => {
     const { regexPattern, message } = formData;
-    
+
     if (!regexPattern.trim()) {
       setMatchResult({ success: false, message: 'Please enter a regex pattern' });
       return;
     }
-    
+
     if (!message.trim()) {
       setMatchResult({ success: false, message: 'Please enter a sample message' });
       return;
@@ -138,7 +227,6 @@ const SMSParser = () => {
         bankName: formData.bankName,
         regexPattern: formData.regexPattern,
         message: formData.message,
-        merchantType: formData.msgType || null,
         category: formData.category || null,
         status: 'PENDING'
       };
@@ -156,7 +244,7 @@ const SMSParser = () => {
 
       setSuccess('Pattern sent for approval successfully!');
       setPatternId(response.data.id);
-      
+
       // Clear form after successful save
       setTimeout(() => {
         setFormData({
@@ -206,7 +294,7 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern approved successfully!');
-      
+
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
@@ -241,7 +329,7 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern rejected successfully!');
-      
+
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
@@ -253,96 +341,13 @@ const SMSParser = () => {
     }
   };
 
-  const FieldGroup = ({ title, children, cols = 2 }) => {
-    const gridColsClass = {
-      1: 'md:grid-cols-1',
-      2: 'md:grid-cols-2',
-      3: 'md:grid-cols-3',
-      4: 'md:grid-cols-4',
-      5: 'md:grid-cols-5'
-    }[cols] || 'md:grid-cols-2';
-
-    return (
-      <div className="bg-gray-50 rounded-lg p-6 mb-6 shadow-sm">
-        {title && (
-          <h3 className="text-lg font-semibold text-primary mb-4 pb-2 border-b-2 border-secondary">
-            {title}
-          </h3>
-        )}
-        <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
-          {children}
-        </div>
-      </div>
-    );
-  };
-
-  const InputField = ({ label, name, value, onChange, type = 'text', placeholder = '', className = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`}
-      />
-    </div>
-  );
-
-  const SelectField = ({ label, name, value, onChange, options, className = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'} ${className}`}
-      >
-        {options.map(option => (
-          <option key={option} value={option}>{option}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const TextAreaField = ({ label, name, value, onChange, rows = 4, className = '', highlight = false, placeholder = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <textarea
-        name={name}
-        value={value}
-        onChange={onChange}
-        rows={rows}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${className}`}
-      />
-    </div>
-  );
-
-  const CheckboxField = ({ label, name, checked, onChange }) => (
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2"
-      />
-      <label className="ml-2 text-sm font-medium text-gray-700">{label}</label>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">SMS Message Template Information</h1>
+          <h1 className="text-3xl font-bold text-primary dark:text-secondary">SMS Message Template Information</h1>
           {userRole === 'checker' && patternId && (
-            <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+            <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-full text-sm font-semibold border border-yellow-300 dark:border-yellow-700">
               Review Mode - Pattern #{patternId}
             </span>
           )}
@@ -358,11 +363,11 @@ const SMSParser = () => {
         {/* Transaction Details */}
         <FieldGroup title="Transaction Details" cols={2}>
           <SelectField
-            label="Msg Type"
-            name="msgType"
-            value={formData.msgType}
+            label="Type"
+            name="type"
+            value={formData.type}
             onChange={handleInputChange}
-            options={['Debit', 'Credit', 'Others']}
+            options={['', 'CREDITED', 'DEBITED', 'OTHERS']}
             disabled={userRole === 'checker'}
           />
           <SelectField
@@ -370,7 +375,7 @@ const SMSParser = () => {
             name="category"
             value={formData.category}
             onChange={handleInputChange}
-            options={['Expense', 'Income', 'Transfer', 'Withdrawal', 'Utility', 'Statement', 'Alert']}
+            options={['', 'FOOD', 'SHOPPING', 'ENTERTAINMENT', 'OTHERS']}
             disabled={userRole === 'checker'}
           />
         </FieldGroup>
@@ -384,7 +389,7 @@ const SMSParser = () => {
             onChange={handleInputChange}
             rows={4}
             className="font-mono text-sm"
-            placeholder="Enter regex pattern for matching SMS messages"
+            placeholder="Put your regex pattern"
             disabled={userRole === 'checker'}
           />
           <TextAreaField
@@ -394,18 +399,17 @@ const SMSParser = () => {
             onChange={handleInputChange}
             rows={4}
             highlight={true}
-            placeholder="Enter sample SMS message"
+            placeholder="Put your SMS message"
             disabled={userRole === 'checker'}
           />
           {matchResult && (
-            <div className={`mt-4 p-4 rounded-md ${
-              matchResult.success 
-                ? 'bg-green-50 border border-green-200 text-green-800' 
-                : 'bg-red-50 border border-red-200 text-red-800'
-            }`}>
+            <div className={`mt-4 p-4 rounded-md ${matchResult.success
+              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+              }`}>
               <p className="font-medium">{matchResult.message}</p>
               {matchResult.matchedText && (
-                <p className="mt-2 text-sm font-mono bg-white p-2 rounded border border-green-300">
+                <p className="mt-2 text-sm font-mono bg-white dark:bg-gray-700 p-2 rounded border border-green-300 dark:border-green-700 text-gray-900 dark:text-gray-100">
                   Matched: {matchResult.matchedText.substring(0, 100)}{matchResult.matchedText.length > 100 ? '...' : ''}
                 </p>
               )}
@@ -443,12 +447,12 @@ const SMSParser = () => {
 
         {/* Error and Success Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-lg mb-6">
             {success}
           </div>
         )}

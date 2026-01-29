@@ -2,6 +2,7 @@ package com.piggy.backend.dto;
 
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.PatternStatus;
+import com.piggy.backend.entity.Category;
 
 public class PatternDTO {
     private Long id;
@@ -9,8 +10,7 @@ public class PatternDTO {
     private String bankName;
     private String regexPattern;
     private String message;
-    private String merchantType;
-    private String category;
+    private Category category;
     private PatternStatus status;
 
     public PatternDTO() {}
@@ -21,7 +21,6 @@ public class PatternDTO {
         this.bankName = pattern.getBankName();
         this.regexPattern = pattern.getRegexPattern();
         this.message = pattern.getMessage();
-        this.merchantType = pattern.getMerchantType();
         this.category = pattern.getCategory();
         this.status = pattern.getStatus();
     }
@@ -67,19 +66,11 @@ public class PatternDTO {
         this.message = message;
     }
 
-    public String getMerchantType() {
-        return merchantType;
-    }
-
-    public void setMerchantType(String merchantType) {
-        this.merchantType = merchantType;
-    }
-
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
