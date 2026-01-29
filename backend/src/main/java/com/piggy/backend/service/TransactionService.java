@@ -43,10 +43,7 @@ public class TransactionService {
         // Save to database
         repository.save(transaction);
 
-        return new TransactionDTO(
-                transaction.getType(),
-                transaction.getAmount(),
-                transaction.getMerchant());
+        return new TransactionDTO(transaction);
     }
 
     // ADD THIS: Get all transactions for a specific user
