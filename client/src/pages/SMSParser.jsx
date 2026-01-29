@@ -28,8 +28,8 @@ const SMSParser = () => {
     category: passedData.category || '',
 
     // Pattern and Sample
-    regexPattern: passedData.regexPattern || passedData.pattern || '(?s)\\s*.*?(?:Acct Your\\s+aVc\\s+no\\.)\\s*([xX0-9]+)\\s*(?:is)?\\s+debited\\s+(?:with | for|by)\\s+(?:Rs\\.? | INR)?(?:\\s*)([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)\\s+on\\s+(\\d{2}-[A-z0-9]{2,3}-\\d{2,4})(?:\\W+\\d{1,2}:\\d{1,2}:\\d{1,2})?)\\s*(?:and|to| & | by)\\s*(?:(?:Acct|a\\/c)\\s*([a-z0-9]+) |account\\s+linked\\s+to\\s+mobile\\s+number\\s+[A-z0-9]+)\\s*(?:credited)?\\s*.*?IMPS\\W*(?:Ref\\s*no)?\\s*([0-9]+).*',
-    message: passedData.message || passedData.sampleMsg || 'dear customer, icici bank acct xx624 debited with rs 1,500.00 on 08-sep-23 and account linked to mobile number xx2022 credited, imps:325116062689. call 18002662 for dispute or sms block 624 to 9215676766.',
+    regexPattern: passedData.regexPattern || passedData.pattern || '',
+    message: passedData.message || passedData.sampleMsg || '',
 
     // Editor Comments and Processed Result
     onDemand: false,
@@ -384,7 +384,7 @@ const SMSParser = () => {
             onChange={handleInputChange}
             rows={4}
             className="font-mono text-sm"
-            placeholder="Enter regex pattern for matching SMS messages"
+            placeholder="Put your regex pattern"
             disabled={userRole === 'checker'}
           />
           <TextAreaField
@@ -394,13 +394,13 @@ const SMSParser = () => {
             onChange={handleInputChange}
             rows={4}
             highlight={true}
-            placeholder="Enter sample SMS message"
+            placeholder="Put your SMS message"
             disabled={userRole === 'checker'}
           />
           {matchResult && (
             <div className={`mt-4 p-4 rounded-md ${matchResult.success
-                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
-                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+              : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
               }`}>
               <p className="font-medium">{matchResult.message}</p>
               {matchResult.matchedText && (
