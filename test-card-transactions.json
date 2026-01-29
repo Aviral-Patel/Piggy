@@ -1,0 +1,22 @@
+[
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 475.00 on Kotak Bank Debit Card XX9123 at SWIGGY on 15-Jan-26."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Your HDFC Bank Credit Card XX4401 has been spent for INR 1,200.00 at AMAZON on 12-Jan-26. Curr O/S: INR 5,400.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 299.00 on Kotak Bank Debit Card XX9123 at NETFLIX on 11-Jan-26."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 2,599.00 on Kotak Bank Credit Card XX9124 at AMAZON on 16-Jan-26."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Your HDFC Bank Credit Card XX4401 has been spent for INR 850.00 at SOME STORE on 13-Jan-26. Curr O/S: INR 6,250.00."
+  }
+]

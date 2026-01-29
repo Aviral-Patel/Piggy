@@ -645,7 +645,7 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
           </div>
 
           {/* Right Column - Charts */}
-          <div className="space-y-6">
+          <div className="space-y-6 lg:sticky lg:top-4 lg:self-start">
             {/* Income vs Expense Chart */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 border border-gray-100 dark:border-gray-700">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
