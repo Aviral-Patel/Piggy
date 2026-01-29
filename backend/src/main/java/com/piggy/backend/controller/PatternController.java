@@ -62,7 +62,6 @@ public class PatternController {
         pattern.setBankName(dto.getBankName());
         pattern.setRegexPattern(dto.getRegexPattern());
         pattern.setMessage(dto.getMessage());
-        pattern.setMerchantType(dto.getMerchantType());
         pattern.setCategory(dto.getCategory());
         pattern.setStatus(dto.getStatus() != null ? dto.getStatus() : PatternStatus.PENDING);
         

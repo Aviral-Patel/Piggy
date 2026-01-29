@@ -2,6 +2,7 @@ package com.piggy.backend.util;
 
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.Transaction;
+import com.piggy.backend.entity.TransactionType;
 import com.piggy.backend.service.PatternService;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +66,6 @@ public class SmsRegexParser {
         // —— From Pattern entity only (never overridden by regex) ——
         transaction.setBankAddress(pattern.getBankAddress());
         transaction.setBankName(pattern.getBankName());
-        transaction.setMerchantType(pattern.getMerchantType());
         transaction.setCategory(pattern.getCategory());
 
         // —— From regex extraction only (fields not in pattern entity) ——
@@ -77,7 +77,7 @@ public class SmsRegexParser {
             String type = matcher.group("type");
             transaction.setType(normalizeType(type));
         } catch (Exception e) {
-            transaction.setType("DEBITED");
+            transaction.setType(TransactionType.DEBITED);
         }
 
         try {
@@ -129,12 +129,12 @@ public class SmsRegexParser {
         return transaction;
     }
 
-    private static String normalizeType(String type) {
-        if (type == null || type.isBlank()) return "DEBITED";
+    private static TransactionType normalizeType(String type) {
+        if (type == null || type.isBlank()) return TransactionType.DEBITED;
         String u = type.toUpperCase();
-        if (u.contains("CREDIT") || "CREDITED".equals(u)) return "CREDITED";
-        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u)) return "DEBITED";
-        return u;
+        if (u.contains("CREDIT") || "CREDITED".equals(u)) return TransactionType.CREDITED;
+        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u)) return TransactionType.DEBITED;
+        return TransactionType.DEBITED;
     }
 
     private static LocalDate parseDate(String dateStr) {

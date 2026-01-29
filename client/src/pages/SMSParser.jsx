@@ -24,7 +24,7 @@ const SMSParser = () => {
     merchantName: passedData.merchantName || '',
 
     // Transaction Details
-    msgType: passedData.msgType || '',
+    type: passedData.type || '',
     category: passedData.category || '',
 
     // Pattern and Sample
@@ -138,7 +138,6 @@ const SMSParser = () => {
         bankName: formData.bankName,
         regexPattern: formData.regexPattern,
         message: formData.message,
-        merchantType: formData.msgType || null,
         category: formData.category || null,
         status: 'PENDING'
       };
@@ -358,11 +357,11 @@ const SMSParser = () => {
         {/* Transaction Details */}
         <FieldGroup title="Transaction Details" cols={2}>
           <SelectField
-            label="Msg Type"
-            name="msgType"
-            value={formData.msgType}
+            label="Type"
+            name="type"
+            value={formData.type}
             onChange={handleInputChange}
-            options={['Debit', 'Credit', 'Others']}
+            options={['', 'CREDITED', 'DEBITED', 'OTHERS']}
             disabled={userRole === 'checker'}
           />
           <SelectField
@@ -370,7 +369,7 @@ const SMSParser = () => {
             name="category"
             value={formData.category}
             onChange={handleInputChange}
-            options={['Expense', 'Income', 'Transfer', 'Withdrawal', 'Utility', 'Statement', 'Alert']}
+            options={['', 'FOOD', 'SHOPPING', 'ENTERTAINMENT', 'OTHERS']}
             disabled={userRole === 'checker'}
           />
         </FieldGroup>

@@ -51,8 +51,6 @@ const TemplateApproval = () => {
         pattern: template.regexPattern,
         message: template.message,
         sampleMsg: template.message,
-        merchantType: template.merchantType,
-        msgType: template.merchantType,
         category: template.category,
         status: template.status
       }

@@ -14,14 +14,19 @@ public class Transaction {
 
     // —— From Pattern entity (set from matched pattern) ——
     private String bankName;
-    private String merchantType;
-    private String category;
+    
+    @Enumerated(EnumType.STRING)
+    private Category category;
+    
     private String bankAddress;
 
     // —— From regex extraction only (overwrite when group present) ——
     private String accountNumber;
     private String merchant;
-    private String type;
+    
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+    
     private LocalDateTime date;
     private BigDecimal amount;
     private BigDecimal balance;   // e.g. Avl Bal, Curr O/S
@@ -40,11 +45,8 @@ public class Transaction {
     public String getBankName() { return bankName; }
     public void setBankName(String bankName) { this.bankName = bankName; }
 
-    public String getMerchantType() { return merchantType; }
-    public void setMerchantType(String merchantType) { this.merchantType = merchantType; }
-
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
     public String getAccountNumber() { return accountNumber; }
     public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
@@ -52,8 +54,8 @@ public class Transaction {
     public String getMerchant() { return merchant; }
     public void setMerchant(String merchant) { this.merchant = merchant; }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public TransactionType getType() { return type; }
+    public void setType(TransactionType type) { this.type = type; }
 
     public LocalDateTime getDate() { return date; }
     public void setDate(LocalDateTime date) { this.date = date; }
