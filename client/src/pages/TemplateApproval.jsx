@@ -43,13 +43,15 @@ const TemplateApproval = () => {
   };
 
   const handleCheck = (template) => {
-    // Navigate to SMSParser with all pattern data
+    // Navigate to SMSParser with all pattern data (including stored merchantName and type)
     navigate('/sms-parser', {
       state: {
         id: template.id,
         patternId: template.id,
         bankAddress: template.bankAddress,
         bankName: template.bankName,
+        merchantName: template.merchantName,
+        type: template.type,
         regexPattern: template.regexPattern,
         pattern: template.regexPattern,
         message: template.message,

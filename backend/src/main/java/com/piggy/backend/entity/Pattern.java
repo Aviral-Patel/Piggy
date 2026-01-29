@@ -16,6 +16,12 @@ public class Pattern {
     @Column(nullable = false)
     private String bankName;
 
+    @Column
+    private String merchantName;
+
+    @Column
+    private String type;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String regexPattern;
 
@@ -39,6 +45,12 @@ public class Pattern {
 
     public String getBankName() { return bankName; }
     public void setBankName(String bankName) { this.bankName = bankName; }
+
+    public String getMerchantName() { return merchantName; }
+    public void setMerchantName(String merchantName) { this.merchantName = merchantName; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     public String getRegexPattern() { return regexPattern; }
     public void setRegexPattern(String regexPattern) { this.regexPattern = regexPattern; }

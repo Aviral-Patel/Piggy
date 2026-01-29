@@ -8,6 +8,8 @@ public class PatternDTO {
     private Long id;
     private String bankAddress;
     private String bankName;
+    private String merchantName;
+    private String type;
     private String regexPattern;
     private String message;
     private Category category;
@@ -19,6 +21,8 @@ public class PatternDTO {
         this.id = pattern.getId();
         this.bankAddress = pattern.getBankAddress();
         this.bankName = pattern.getBankName();
+        this.merchantName = pattern.getMerchantName();
+        this.type = pattern.getType();
         this.regexPattern = pattern.getRegexPattern();
         this.message = pattern.getMessage();
         this.category = pattern.getCategory();
@@ -48,6 +52,22 @@ public class PatternDTO {
 
     public void setBankName(String bankName) {
         this.bankName = bankName;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getRegexPattern() {

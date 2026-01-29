@@ -362,7 +362,7 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Patterns for Punjab National Bank (PNB)
 -- =============================================
 
--- PNB - Loan installment due notification
+-- PNB - Loan installment due notification (Auto-detected as REMINDER)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('PNBSMS', 'Punjab National Bank',
      '.*?Installment of Rs\s+(?<amount>[\d,]+\.\d{2})\s+in loan A/c No\s+(?<accountNumber>\w+)\s+is falling due on\s+(?<date>\d{2}-\d{2}-\d{4}).*?Total Amt\.\s+due\s+[\d,]+\.\d{2}',
@@ -406,14 +406,14 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Additional Patterns for Axis Bank
 -- =============================================
 
--- AXISBK - Commercial vehicle loan overdue notification
+-- AXISBK - Commercial vehicle loan overdue notification (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('AXISBK', 'Axis Bank',
      '.*?Axis Bank\s+(?<merchant>COMMERCIAL VEHICLE|PERSONAL LOAN|HOME LOAN|CAR LOAN)\s+A/c\s+no\.\s+(?<accountNumber>\w+)\s+is overdue',
      'Your Axis Bank COMMERCIAL VEHICLE A/c no. XX6422 is overdue. Our authorised agency AXIS SALES LTD may contact you. Please ignore if paid.',
      'OTHERS', 'APPROVED');
 
--- AXISBK - Personal loan overdue with amount
+-- AXISBK - Personal loan overdue with amount (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('AXISBK', 'Axis Bank',
      '.*?Axis Bank\s+(?<merchant>PERSONAL LOAN|HOME LOAN|CAR LOAN|COMMERCIAL VEHICLE)\s+A/c.*?Total overdue INR\s+(?<amount>[\d,]+\.\d{2})',
@@ -424,7 +424,7 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Additional Patterns for ICICI Bank
 -- =============================================
 
--- ICICIT - Credit bureau reporting notification
+-- ICICIT - Credit bureau reporting notification (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('ICICIT', 'ICICI Bank',
      '.*?(?<date>\d+)\s+days payment overdue for ICICI Bank\s+(?<merchant>PL|CC|HL|AL)\s+(?<accountNumber>\w+)\s+in\s+\d{2}-\w{3}-\d{2}\s+has been submitted for reporting to Credit Bureaus',
@@ -435,7 +435,7 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Additional Patterns for Kotak Bank
 -- =============================================
 
--- KOTAKB - Statement ready notification
+-- KOTAKB - Statement ready notification (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('KOTAKB', 'Kotak Bank',
      '.*?Kotak bank statement for CRN\s+(?<accountNumber>\w+)\s+for\s+(?<date>\w{3}-\d{2})\s+is ready',
@@ -446,7 +446,7 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Patterns for OneCard
 -- =============================================
 
--- OneCrd - Credit card bill overdue
+-- OneCrd - Credit card bill overdue (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('OneCrd', 'OneCard',
      '.*?Your bill is overdue.*?Pay minimum due Rs\.(?<amount>[\d,]+\.\d{2})',
@@ -504,7 +504,7 @@ INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category,
 -- Patterns for Jana Small Finance Bank
 -- =============================================
 
--- JANABK - Housing loan EMI default notification
+-- JANABK - Housing loan EMI default notification (Auto-detected as ALERT)
 INSERT INTO patterns (bank_address, bank_name, regex_pattern, message, category, status) VALUES
     ('JANABK', 'Jana Small Finance Bank',
      '.*?DEFAULT in the repayment of EMI for your\s+(?<merchant>HOUSING|PERSONAL|CAR|BUSINESS)\s+loan account ending\s+(?<accountNumber>\w+).*?Overdue Rs\.(?<amount>[\d,]+\.\d{0,2})',
