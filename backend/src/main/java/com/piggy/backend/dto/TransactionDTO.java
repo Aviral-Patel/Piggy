@@ -18,6 +18,7 @@ public class TransactionDTO {
     private BigDecimal amount;
     private BigDecimal balance;
     private String refNumber;
+    private String smsMessage;
 
     public TransactionDTO() {}
 
@@ -39,6 +40,7 @@ public class TransactionDTO {
         this.amount = transaction.getAmount();
         this.balance = transaction.getBalance();
         this.refNumber = transaction.getRefNumber();
+        this.smsMessage = transaction.getSmsMessage();
     }
 
     public Long getId() { return id; }
@@ -73,4 +75,7 @@ public class TransactionDTO {
 
     public String getRefNumber() { return refNumber; }
     public void setRefNumber(String refNumber) { this.refNumber = refNumber; }
+
+    public String getSmsMessage() { return smsMessage; }
+    public void setSmsMessage(String smsMessage) { this.smsMessage = smsMessage; }
 }
