@@ -1,0 +1,14 @@
+[
+  {
+    "address": "TESTBANK",
+    "message": "Your account has been debited with Rs 1000.00 on 29-Jan-2026 for payment to merchant."
+  },
+  {
+    "address": "UNKNOWN",
+    "message": "Dear customer, Rs 500 withdrawn from ATM on 28-Jan-26. Available balance: Rs 5000."
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Hello! Your money transfer was successful. Thank you for banking with us!"
+  }
+]

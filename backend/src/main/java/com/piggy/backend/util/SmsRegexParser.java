@@ -38,7 +38,8 @@ public class SmsRegexParser {
         List<Pattern> approvedPatterns = patternService.getApprovedPatternsByBankAddress(bankAddress);
 
         if (approvedPatterns.isEmpty()) {
-            throw new RuntimeException("No approved patterns found for bank address: " + bankAddress);
+            System.out.println("⚠ No approved patterns found for bank address: " + bankAddress);
+            return null;
         }
 
         for (Pattern pattern : approvedPatterns) {
@@ -49,11 +50,22 @@ public class SmsRegexParser {
             Matcher matcher = regex.matcher(sms);
 
             if (matcher.find()) {
-                return buildTransaction(matcher, pattern, bankAddress);
+                System.out.println("✓ Pattern matched for bank address: " + bankAddress);
+                Transaction transaction = buildTransaction(matcher, pattern, bankAddress);
+                
+                // If transaction is null, pattern didn't have required fields (like amount)
+                // Continue to try other patterns
+                if (transaction == null) {
+                    System.out.println("⚠ Pattern matched but transaction build failed - trying next pattern");
+                    continue;
+                }
+                
+                return transaction;
             }
         }
 
-        throw new RuntimeException("No matching pattern found for SMS from bank address: " + bankAddress);
+        System.out.println("⚠ No matching pattern found for SMS from bank address: " + bankAddress);
+        return null;
     }
 
     /**
@@ -83,14 +95,21 @@ public class SmsRegexParser {
         try {
             String amountStr = matcher.group("amount");
             if (amountStr == null || amountStr.isBlank()) {
-                throw new IllegalArgumentException("Amount group is empty");
+                System.out.println("⚠ Amount field is empty or null - pattern may be for notification/alert message");
+                // Don't set amount - leave it null
+            } else {
+                amountStr = amountStr.replace(",", "").trim();
+                transaction.setAmount(new BigDecimal(amountStr));
             }
-            amountStr = amountStr.replace(",", "").trim();
-            transaction.setAmount(new BigDecimal(amountStr));
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to extract amount from SMS: " + e.getMessage(), e);
+            // Amount group doesn't exist in pattern - this is likely a notification/alert pattern
+            System.out.println("⚠ Amount group not found in pattern - this may be a notification/alert message");
+            // Pattern matched but no amount field - this might not be a transaction pattern
+            // Return null so it gets saved as unparsed message
+            return null;
         } catch (Exception e) {
-            throw new RuntimeException("Amount group missing or invalid in pattern (expected named group 'amount')", e);
+            System.err.println("✗ Error extracting amount: " + e.getMessage());
+            return null;
         }
 
         try {
