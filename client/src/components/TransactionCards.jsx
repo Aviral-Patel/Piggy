@@ -27,6 +27,8 @@ const TransactionCards = ({ transactions }) => {
           const typeLower = transaction.type?.toLowerCase() ?? '';
           const isCredit = typeLower.includes('credit');
           const isDebit = typeLower.includes('debit');
+          const isAlert = typeLower.includes('alert');
+          const isReminder = typeLower.includes('reminder');
 
           return (
             <button
@@ -46,9 +48,15 @@ const TransactionCards = ({ transactions }) => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className={`text-2xl font-bold ${isCredit ? 'text-tertiary' : isDebit ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
-                      {isCredit ? '+' : isDebit ? '-' : ''}₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
-                    </p>
+                    {isAlert || isReminder ? (
+                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${isAlert ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'}`}>
+                        {transaction.type}
+                      </span>
+                    ) : (
+                      <p className={`text-2xl font-bold ${isCredit ? 'text-tertiary' : isDebit ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
+                        {isCredit ? '+' : isDebit ? '-' : ''}₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -99,6 +107,8 @@ const TransactionCards = ({ transactions }) => {
                 const typeLower = (t.type && typeof t.type === 'string' ? t.type : t.type?.toString?.() ?? '').toLowerCase();
                 const isCredit = typeLower.includes('credit');
                 const isDebit = typeLower.includes('debit');
+                const isAlert = typeLower.includes('alert');
+                const isReminder = typeLower.includes('reminder');
 
                 // Display helpers: -1 for numeric, "unknown" for string when missing
                 const str = (v) => (v != null && String(v).trim() !== '') ? String(v) : 'unknown';
@@ -135,20 +145,28 @@ const TransactionCards = ({ transactions }) => {
                       <div className="space-y-3">
                         {detailRow('ID', num(t.id) >= 0 ? String(num(t.id)) : '-1')}
                         {detailRow('Merchant', str(t.merchant))}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
-                          <p className={`text-xl font-bold ${isCredit ? 'text-tertiary' : isDebit ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
-                            {amountVal != null && !Number.isNaN(amountVal) ? (isCredit ? '+' : isDebit ? '-' : '') + '₹' + showAmount : '₹' + showAmount}
-                          </p>
-                        </div>
+                        {!isAlert && !isReminder && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
+                            <p className={`text-xl font-bold ${isCredit ? 'text-tertiary' : isDebit ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
+                              {amountVal != null && !Number.isNaN(amountVal) ? (isCredit ? '+' : isDebit ? '-' : '') + '₹' + showAmount : '₹' + showAmount}
+                            </p>
+                          </div>
+                        )}
                         <div>
                           <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
-                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${isCredit ? 'bg-secondary text-primary dark:bg-gray-700 dark:text-secondary' : isDebit ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'}`}>
+                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                            isCredit ? 'bg-secondary text-primary dark:bg-gray-700 dark:text-secondary' : 
+                            isDebit ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 
+                            isAlert ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 
+                            isReminder ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 
+                            'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+                          }`}>
                             {str(t.type)}
                           </span>
                         </div>
                         {detailRow('Date', fmtDate(t.date))}
-                        {detailRow('Balance', showBalance)}
+                        {!isAlert && !isReminder && detailRow('Balance', showBalance)}
                       </div>
 
                       <div className="space-y-3">

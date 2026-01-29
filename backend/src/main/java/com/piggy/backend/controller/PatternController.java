@@ -60,6 +60,8 @@ public class PatternController {
         Pattern pattern = new Pattern();
         pattern.setBankAddress(dto.getBankAddress());
         pattern.setBankName(dto.getBankName());
+        pattern.setMerchantName(dto.getMerchantName());
+        pattern.setType(dto.getType());
         pattern.setRegexPattern(dto.getRegexPattern());
         pattern.setMessage(dto.getMessage());
         pattern.setCategory(dto.getCategory());

@@ -474,7 +474,12 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
             </div>
             
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {bulkParsedData.map((transaction, index) => (
+              {bulkParsedData.map((transaction, index) => {
+                const typeLower = transaction.type?.toLowerCase() || '';
+                const isAlert = typeLower.includes('alert');
+                const isReminder = typeLower.includes('reminder');
+                
+                return (
                 <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -482,16 +487,22 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{transaction.merchant || 'N/A'}</p>
                     </div>
                     
-                    <div>
-                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
-                      <p className="text-sm font-bold text-primary">
-                        ₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
-                      </p>
-                    </div>
+                    {!isAlert && !isReminder && (
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
+                        <p className="text-sm font-bold text-primary">
+                          ₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
+                        </p>
+                      </div>
+                    )}
                     
                     <div>
                       <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
-                      <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-secondary text-primary dark:bg-gray-600 dark:text-secondary">
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
+                        isAlert ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 
+                        isReminder ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 
+                        'bg-secondary text-primary dark:bg-gray-600 dark:text-secondary'
+                      }`}>
                         {transaction.type || 'N/A'}
                       </span>
                     </div>
@@ -502,16 +513,24 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                     <p className="text-xs text-gray-700 dark:text-gray-300 truncate">{transaction.smsMessage}</p>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         )}
 
         {/* Parsed Data Preview */}
-        {parsedData && (
+        {parsedData && (() => {
+          const typeLower = parsedData.type?.toLowerCase() || '';
+          const isAlert = typeLower.includes('alert');
+          const isReminder = typeLower.includes('reminder');
+          
+          return (
          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 mb-6 border-2 border-green-500 dark:border-tertiary">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">✓ Transaction Added Successfully!</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                ✓ {isAlert || isReminder ? 'Alert/Reminder' : 'Transaction'} Added Successfully!
+              </h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -521,16 +540,22 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
                   <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{parsedData.merchant || 'N/A'}</p>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
-                  <p className="text-xl font-bold text-primary">
-                    ₹{parsedData.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
-                  </p>
-                </div>
+                {!isAlert && !isReminder && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
+                    <p className="text-xl font-bold text-primary">
+                      ₹{parsedData.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
+                    </p>
+                  </div>
+                )}
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
-                  <span className="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-secondary text-primary dark:bg-gray-700 dark:text-secondary">
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                    isAlert ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 
+                    isReminder ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 
+                    'bg-secondary text-primary dark:bg-gray-700 dark:text-secondary'
+                  }`}>
                     {parsedData.type || 'N/A'}
                   </span>
                 </div>
@@ -565,7 +590,8 @@ const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 
               <p className="text-sm text-gray-700 dark:text-gray-300 break-words">{parsedData.smsMessage}</p>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* Transactions Cards */}
         <TransactionCards transactions={transactions} />

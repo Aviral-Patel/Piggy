@@ -270,6 +270,8 @@ const SMSParser = () => {
       const patternData = {
         bankAddress: formData.bankAddress,
         bankName: formData.bankName,
+        merchantName: formData.merchantName || null,
+        type: formData.type || null,
         regexPattern: formData.regexPattern,
         message: formData.message,
         category: formData.category || null,
@@ -611,7 +613,7 @@ const SMSParser = () => {
             name="type"
             value={formData.type}
             onChange={handleInputChange}
-            options={['', 'CREDITED', 'DEBITED', 'OTHERS']}
+            options={['', 'CREDITED', 'DEBITED', 'ALERT', 'REMINDER']}
             disabled={userRole === 'checker'}
           />
           <SelectField
