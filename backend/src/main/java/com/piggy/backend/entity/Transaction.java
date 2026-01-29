@@ -31,6 +31,8 @@ public class Transaction {
     private BigDecimal amount;
     private BigDecimal balance;   // e.g. Avl Bal, Curr O/S
     private String refNumber;      // e.g. Ref No, UPI Ref
+    @Column(length = 2000)
+    private String smsMessage;    // Original SMS text used to parse this transaction
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -68,6 +70,9 @@ public class Transaction {
 
     public String getRefNumber() { return refNumber; }
     public void setRefNumber(String refNumber) { this.refNumber = refNumber; }
+
+    public String getSmsMessage() { return smsMessage; }
+    public void setSmsMessage(String smsMessage) { this.smsMessage = smsMessage; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

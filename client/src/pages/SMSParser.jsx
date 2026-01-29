@@ -3,20 +3,96 @@ import { useLocation, Navigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
+// Helper components defined outside SMSParser so they aren't recreated on each render (fixes input losing focus when typing)
+const FieldGroup = ({ title, children, cols = 2 }) => {
+  const gridColsClass = {
+    1: 'md:grid-cols-1',
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-3',
+    4: 'md:grid-cols-4',
+    5: 'md:grid-cols-5'
+  }[cols] || 'md:grid-cols-2';
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-sm dark:shadow-gray-950/30 border border-gray-100 dark:border-gray-700">
+      {title && (
+        <h3 className="text-lg font-semibold text-primary dark:text-secondary mb-4 pb-2 border-b-2 border-secondary dark:border-gray-600">
+          {title}
+        </h3>
+      )}
+      <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const InputField = ({ label, name, value, onChange, type = 'text', placeholder = '', className = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
+    />
+  </div>
+);
+
+const SelectField = ({ label, name, value, onChange, options, className = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} text-gray-900 dark:text-gray-100 ${className}`}
+    >
+      {options.map(option => (
+        <option key={option} value={option}>{option}</option>
+      ))}
+    </select>
+  </div>
+);
+
+const TextAreaField = ({ label, name, value, onChange, rows = 4, className = '', highlight = false, placeholder = '', disabled = false }) => (
+  <div className="flex flex-col">
+    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      rows={rows}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300 dark:border-gray-600'} rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
+    />
+  </div>
+);
+
+const CheckboxField = ({ label, name, checked, onChange }) => (
+  <div className="flex items-center">
+    <input
+      type="checkbox"
+      name={name}
+      checked={checked}
+      onChange={onChange}
+      className="w-4 h-4 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary focus:ring-2 bg-white dark:bg-gray-700"
+    />
+    <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+  </div>
+);
+
 const SMSParser = () => {
   const location = useLocation();
   const passedData = location.state || {};
-  const { user, token } = useUser();
+  const { user, token, loading } = useUser();
 
-  // Determine user role (normalize to lowercase for comparison)
-  const userRole = user?.role?.toLowerCase();
-
-  // Double-check role access at component level
-  if (!user || (userRole !== 'maker' && userRole !== 'checker')) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // Sample data - in real app, this would come from props or API
+  // All hooks must run before any conditional return (Rules of Hooks)
   const [formData, setFormData] = useState({
     // General Information
     bankAddress: passedData.bankAddress || '',
@@ -44,6 +120,19 @@ const SMSParser = () => {
   const [patternId, setPatternId] = useState(passedData.patternId || passedData.id || null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Role check and redirect after all hooks (avoid conditional hook calls)
+  const userRole = user?.role?.toLowerCase();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <p className="text-lg text-gray-600 dark:text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+  if (!user || (userRole !== 'maker' && userRole !== 'checker')) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -251,89 +340,6 @@ const SMSParser = () => {
       setSaving(false);
     }
   };
-
-  const FieldGroup = ({ title, children, cols = 2 }) => {
-    const gridColsClass = {
-      1: 'md:grid-cols-1',
-      2: 'md:grid-cols-2',
-      3: 'md:grid-cols-3',
-      4: 'md:grid-cols-4',
-      5: 'md:grid-cols-5'
-    }[cols] || 'md:grid-cols-2';
-
-    return (
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-sm dark:shadow-gray-950/30 border border-gray-100 dark:border-gray-700">
-        {title && (
-          <h3 className="text-lg font-semibold text-primary dark:text-secondary mb-4 pb-2 border-b-2 border-secondary dark:border-gray-600">
-            {title}
-          </h3>
-        )}
-        <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
-          {children}
-        </div>
-      </div>
-    );
-  };
-
-  const InputField = ({ label, name, value, onChange, type = 'text', placeholder = '', className = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
-      />
-    </div>
-  );
-
-  const SelectField = ({ label, name, value, onChange, options, className = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
-      <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className={`px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} text-gray-900 dark:text-gray-100 ${className}`}
-      >
-        {options.map(option => (
-          <option key={option} value={option}>{option}</option>
-        ))}
-      </select>
-    </div>
-  );
-
-  const TextAreaField = ({ label, name, value, onChange, rows = 4, className = '', highlight = false, placeholder = '', disabled = false }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
-      <textarea
-        name={name}
-        value={value}
-        onChange={onChange}
-        rows={rows}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`px-4 py-2 border ${highlight ? 'border-tertiary border-2' : 'border-gray-300 dark:border-gray-600'} rounded-md text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition resize-none ${disabled ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : 'bg-white dark:bg-gray-700'} ${className}`}
-      />
-    </div>
-  );
-
-  const CheckboxField = ({ label, name, checked, onChange }) => (
-    <div className="flex items-center">
-      <input
-        type="checkbox"
-        name={name}
-        checked={checked}
-        onChange={onChange}
-        className="w-4 h-4 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary focus:ring-2 bg-white dark:bg-gray-700"
-      />
-      <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

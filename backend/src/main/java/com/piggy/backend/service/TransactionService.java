@@ -36,10 +36,11 @@ public class TransactionService {
 
         // Parse the SMS with bank address
         Transaction transaction = smsRegexParser.parse(sms, bankAddress);
-        
+        transaction.setSmsMessage(sms);
+
         // Associate with user
         transaction.setUser(user);
-        
+
         // Save to database
         repository.save(transaction);
 
