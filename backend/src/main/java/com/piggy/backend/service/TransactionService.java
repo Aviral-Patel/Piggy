@@ -9,6 +9,7 @@ import com.piggy.backend.repository.TransactionRepository;
 import com.piggy.backend.repository.UserRepository;
 import com.piggy.backend.util.SmsRegexParser;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class TransactionService {
     private final TransactionRepository repository;
     private final UserRepository userRepository;
     private final SmsRegexParser smsRegexParser;
+    
+    @Autowired
+    private UnparsedMessageService unparsedMessageService;
 
     public TransactionService(
             TransactionRepository repository,
@@ -47,7 +51,23 @@ public class TransactionService {
         // Parse the SMS with bank address
         Transaction transaction = smsRegexParser.parse(sms, bankAddress);
         if (transaction == null) {
-            throw new BadRequestException("Unable to parse SMS message. Please check the format and bank address");
+            // Save as unparsed message
+            String errorMessage = "Unable to parse SMS message. No matching pattern found for bank address: " + bankAddress;
+            
+            try {
+                if (unparsedMessageService != null) {
+                    unparsedMessageService.saveUnparsedMessage(bankAddress, sms, errorMessage, user);
+                    System.out.println("✓ Unparsed message saved successfully for user: " + username);
+                } else {
+                    System.err.println("⚠ UnparsedMessageService is null - cannot save unparsed message");
+                }
+            } catch (Exception e) {
+                System.err.println("⚠ Failed to save unparsed message: " + e.getMessage());
+                e.printStackTrace();
+                // Don't throw - just log the error and continue with the BadRequestException
+            }
+            
+            throw new BadRequestException(errorMessage);
         }
         
         transaction.setSmsMessage(sms);

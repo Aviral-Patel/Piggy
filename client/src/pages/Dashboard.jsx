@@ -50,6 +50,9 @@ const [parsedData, setParsedData] = useState(null);
 const [error, setError] = useState('');
 const [parseLoading, setParseLoading] = useState(false);
 const [fetchingTransactions, setFetchingTransactions] = useState(true);
+const [bulkParsedData, setBulkParsedData] = useState([]);
+const [bulkParseLoading, setBulkParseLoading] = useState(false);
+const [bulkParseProgress, setBulkParseProgress] = useState({ current: 0, total: 0 });
   
   // Fetch user role if missing
   useEffect(() => {
@@ -211,6 +214,109 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
     setError('');
   };
 
+  const handleJsonFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+      toast.error('Please upload a valid JSON file');
+      return;
+    }
+
+    try {
+      const fileContent = await file.text();
+      const jsonData = JSON.parse(fileContent);
+
+      // Validate JSON structure
+      if (!Array.isArray(jsonData)) {
+        toast.error('JSON file must contain an array of messages');
+        return;
+      }
+
+      // Validate each message has required fields
+      const isValid = jsonData.every(item => item.address && item.message);
+      if (!isValid) {
+        toast.error('Each message must have "address" and "message" fields');
+        return;
+      }
+
+      // Process all messages
+      setBulkParseLoading(true);
+      setBulkParsedData([]);
+      setBulkParseProgress({ current: 0, total: jsonData.length });
+      setError('');
+
+      const parsedTransactions = [];
+      const failedMessages = [];
+
+      for (let i = 0; i < jsonData.length; i++) {
+        const { address, message } = jsonData[i];
+        
+        try {
+          const response = await axios.post(
+            'http://localhost:8080/api/transactions/parse',
+            { sms: message, bankAddress: address },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          
+          const transactionWithSms = {
+            ...response.data,
+            smsMessage: message
+          };
+          parsedTransactions.push(transactionWithSms);
+          
+          setBulkParseProgress({ current: i + 1, total: jsonData.length });
+        } catch (err) {
+          console.error(`Error parsing message ${i + 1}:`, err);
+          failedMessages.push({
+            index: i + 1,
+            address,
+            message: message.substring(0, 50) + '...',
+            error: err.response?.data?.message || 'Failed to parse'
+          });
+        }
+      }
+
+      // Update transactions list with successfully parsed transactions
+      if (parsedTransactions.length > 0) {
+        setBulkParsedData(parsedTransactions);
+        setTransactions([...parsedTransactions, ...transactions]);
+        toast.success(`Successfully parsed ${parsedTransactions.length} out of ${jsonData.length} messages!`);
+      }
+
+      // Show warning for failed messages
+      if (failedMessages.length > 0) {
+        console.warn('Failed messages:', failedMessages);
+        toast.warning(`${failedMessages.length} message(s) failed to parse. Check console for details.`);
+      }
+
+      // Clear the file input
+      event.target.value = '';
+
+    } catch (err) {
+      console.error('Error reading JSON file:', err);
+      if (err instanceof SyntaxError) {
+        toast.error('Invalid JSON format. Please check your file.');
+      } else {
+        toast.error('Failed to process file. Please try again.');
+      }
+    } finally {
+      setBulkParseLoading(false);
+      setBulkParseProgress({ current: 0, total: 0 });
+      
+      // Auto-clear bulk parsed data after 5 seconds
+      setTimeout(() => {
+        setBulkParsedData([]);
+      }, 5000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
      
@@ -307,6 +413,99 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
             </div>
           </form>
         </div>
+
+        {/* Bulk JSON Upload Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 mb-6 border border-gray-100 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            Bulk Upload (JSON)
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Upload a JSON file with multiple SMS messages. Expected format:
+          </p>
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
+            <code className="text-xs text-gray-800 dark:text-gray-200">
+              [<br />
+              &nbsp;&nbsp;&#123; "address": "BZ-SBIINB", "message": "Your SMS text here..." &#125;,<br />
+              &nbsp;&nbsp;&#123; "address": "VM-HDFCBK", "message": "Another SMS text..." &#125;<br />
+              ]
+            </code>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <label htmlFor="json-upload" className="flex-1">
+              <input
+                id="json-upload"
+                type="file"
+                accept=".json"
+                onChange={handleJsonFileUpload}
+                disabled={bulkParseLoading}
+                className="block w-full text-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </label>
+          </div>
+
+          {bulkParseLoading && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Processing messages...
+                </span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {bulkParseProgress.current} / {bulkParseProgress.total}
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                <div 
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300"
+                  style={{ width: `${(bulkParseProgress.current / bulkParseProgress.total) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bulk Parsed Data Preview */}
+        {bulkParsedData.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-950/30 p-6 mb-6 border-2 border-green-500 dark:border-tertiary">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                ✓ {bulkParsedData.length} Transactions Added Successfully!
+              </h2>
+            </div>
+            
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {bulkParsedData.map((transaction, index) => (
+                <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Merchant</label>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{transaction.merchant || 'N/A'}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</label>
+                      <p className="text-sm font-bold text-primary">
+                        ₹{transaction.amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 'N/A'}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
+                      <span className="inline-block px-2 py-1 rounded-full text-xs font-semibold bg-secondary text-primary dark:bg-gray-600 dark:text-secondary">
+                        {transaction.type || 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-2">
+                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">SMS</label>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 truncate">{transaction.smsMessage}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Parsed Data Preview */}
         {parsedData && (

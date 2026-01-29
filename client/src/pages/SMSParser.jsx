@@ -121,6 +121,35 @@ const SMSParser = () => {
   const [patternId, setPatternId] = useState(passedData.patternId || passedData.id || null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  
+  // Pending messages state
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [showPendingMessages, setShowPendingMessages] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [loadingPending, setLoadingPending] = useState(false);
+
+  // Fetch pending messages count on mount
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/unparsed-messages/pending/count', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('Pending messages count:', response.data.count);
+        setPendingCount(response.data.count);
+      } catch (err) {
+        console.error('Error fetching pending count:', err);
+        console.error('Error details:', err.response || err.message);
+      }
+    };
+
+    if (token && user?.role?.toLowerCase() === 'maker') {
+      console.log('Fetching pending messages count for maker...');
+      fetchPendingCount();
+    }
+  }, [token, user]);
 
   // Role check and redirect after all hooks (avoid conditional hook calls)
   const userRole = user?.role?.toLowerCase();
@@ -368,17 +397,205 @@ const SMSParser = () => {
     }
   };
 
+  const fetchPendingMessages = async () => {
+    if (pendingCount === 0) {
+      toast.info('No pending messages to display');
+      return;
+    }
+    
+    setLoadingPending(true);
+    try {
+      const response = await axios.get('http://localhost:8080/api/unparsed-messages/pending', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Fetched pending messages:', response.data);
+      setPendingMessages(response.data);
+      setShowPendingMessages(true);
+    } catch (err) {
+      console.error('Error fetching pending messages:', err);
+      toast.error('Failed to load pending messages. Is the backend running?');
+    } finally {
+      setLoadingPending(false);
+    }
+  };
+
+  const handleSelectPendingMessage = async (message) => {
+    // Auto-fill the form with the pending message
+    setFormData(prev => ({
+      ...prev,
+      bankAddress: message.bankAddress,
+      message: message.smsMessage
+    }));
+    
+    // Mark as processed
+    try {
+      await axios.put(
+        `http://localhost:8080/api/unparsed-messages/${message.id}/mark-processed`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Update the pending count
+      setPendingCount(prev => Math.max(0, prev - 1));
+      
+      // Remove from pending list
+      setPendingMessages(prev => prev.filter(m => m.id !== message.id));
+      
+      toast.success('Message loaded! Now create a pattern for it.');
+      setShowPendingMessages(false);
+    } catch (err) {
+      console.error('Error marking message as processed:', err);
+      toast.error('Failed to mark message as processed');
+    }
+  };
+
+  const handleDeletePendingMessage = async (messageId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/unparsed-messages/${messageId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Update the pending count
+      setPendingCount(prev => Math.max(0, prev - 1));
+      
+      // Remove from pending list
+      setPendingMessages(prev => prev.filter(m => m.id !== messageId));
+      
+      toast.success('Message deleted successfully');
+    } catch (err) {
+      console.error('Error deleting message:', err);
+      toast.error('Failed to delete message');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-primary dark:text-secondary">SMS Message Template Information</h1>
-          {userRole === 'checker' && patternId && (
-            <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-full text-sm font-semibold border border-yellow-300 dark:border-yellow-700">
-              Review Mode - Pattern #{patternId}
-            </span>
-          )}
+          <div className="flex items-center gap-4">
+            {/* Pending Messages Button */}
+            {userRole === 'maker' && (
+              <button
+                onClick={fetchPendingMessages}
+                disabled={pendingCount === 0}
+                className={`relative inline-flex items-center px-4 py-2 rounded-full font-semibold transition duration-300 ${
+                  pendingCount > 0
+                    ? 'bg-orange-500 hover:bg-orange-600 text-white cursor-pointer'
+                    : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Pending Messages
+                {pendingCount > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-orange-100 bg-orange-700 rounded-full">
+                    {pendingCount}
+                  </span>
+                )}
+                {pendingCount === 0 && (
+                  <span className="ml-2 text-xs">(0)</span>
+                )}
+              </button>
+            )}
+            {userRole === 'checker' && patternId && (
+              <span className="px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-full text-sm font-semibold border border-yellow-300 dark:border-yellow-700">
+                Review Mode - Pattern #{patternId}
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* Pending Messages Modal */}
+        {showPendingMessages && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] overflow-hidden">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  Pending SMS Messages ({pendingMessages.length})
+                </h2>
+                <button
+                  onClick={() => setShowPendingMessages(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto max-h-[60vh]">
+                {loadingPending ? (
+                  <p className="text-center text-gray-600 dark:text-gray-400">Loading...</p>
+                ) : pendingMessages.length === 0 ? (
+                  <p className="text-center text-gray-600 dark:text-gray-400">No pending messages</p>
+                ) : (
+                  <div className="space-y-4">
+                    {pendingMessages.map((message) => (
+                      <div
+                        key={message.id}
+                        className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary dark:hover:border-secondary transition"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-sm font-semibold">
+                                {message.bankAddress}
+                              </span>
+                              {message.user && (
+                                <span className="inline-block px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
+                                  Submitted by: {message.user.username}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {new Date(message.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSelectPendingMessage(message)}
+                              className="px-3 py-1 bg-primary hover:bg-tertiary text-white rounded-md text-sm font-semibold transition"
+                            >
+                              Use This
+                            </button>
+                            <button
+                              onClick={() => handleDeletePendingMessage(message.id)}
+                              className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-semibold transition"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+                          <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
+                            {message.smsMessage}
+                          </p>
+                        </div>
+                        {message.errorMessage && (
+                          <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 rounded-md">
+                            <p className="text-xs text-red-600 dark:text-red-400">
+                              Error: {message.errorMessage}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* General Information */}
         <FieldGroup title="General Information" cols={3}>
