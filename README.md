@@ -102,7 +102,7 @@ If no pattern matches:
 ## 🏗️ Architecture Overview
 
 ```
-React (Vite)  ──▶  Spring Boot REST API  ──▶  H2 / DB
+React (Vite)  ──▶  Spring Boot REST API  ──▶  MySQL / DB
         ▲                    │
         └──── JWT Auth ◀──────┘
 ```
