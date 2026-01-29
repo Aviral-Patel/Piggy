@@ -375,7 +375,7 @@ const SMSParser = () => {
             name="category"
             value={formData.category}
             onChange={handleInputChange}
-            options={['', 'FOOD', 'SHOPPING', 'ENTERTAINMENT', 'OTHERS']}
+            options={['', 'FOOD', 'SHOPPING', 'ENTERTAINMENT', 'TRANSPORT', 'UTILITIES', 'OTHERS']}
             disabled={userRole === 'checker'}
           />
         </FieldGroup>

@@ -9,8 +9,41 @@ const Dashboard = () => {
   
 const { user, token, loading, isAuthenticated, updateUser } = useUser();
 const [smsText, setSmsText] = useState('');
-const [bankAddress, setBankAddress] = useState('');
-const [bankAddresses, setBankAddresses] = useState([]);
+
+// Static fallback list with all available bank addresses
+const defaultBankAddresses = [
+  { id: 'BZ-SBIINB', address: 'BZ-SBIINB', bankName: 'State Bank of India' },
+  { id: 'SBIINB', address: 'SBIINB', bankName: 'State Bank of India' },
+  { id: 'CBSSBI', address: 'CBSSBI', bankName: 'State Bank of India CBS' },
+  { id: 'SBIBNK', address: 'SBIBNK', bankName: 'State Bank of India' },
+  { id: 'SBICRD', address: 'SBICRD', bankName: 'SBI Credit Card' },
+  { id: 'VM-HDFCBK', address: 'VM-HDFCBK', bankName: 'HDFC Bank' },
+  { id: 'HDFCBK', address: 'HDFCBK', bankName: 'HDFC Bank' },
+  { id: 'AX-ICICIB', address: 'AX-ICICIB', bankName: 'ICICI Bank' },
+  { id: 'ICICIT', address: 'ICICIT', bankName: 'ICICI Bank' },
+  { id: 'JD-AXISBK', address: 'JD-AXISBK', bankName: 'Axis Bank' },
+  { id: 'AXISBK', address: 'AXISBK', bankName: 'Axis Bank' },
+  { id: 'KM-KOTAKB', address: 'KM-KOTAKB', bankName: 'Kotak Bank' },
+  { id: 'KOTAKB', address: 'KOTAKB', bankName: 'Kotak Bank' },
+  { id: 'PNBSMS', address: 'PNBSMS', bankName: 'Punjab National Bank' },
+  { id: 'TATAMF', address: 'TATAMF', bankName: 'Tata Mutual Fund' },
+  { id: 'FEDBNK', address: 'FEDBNK', bankName: 'Federal Bank' },
+  { id: 'AUBANK', address: 'AUBANK', bankName: 'AU Small Finance Bank' },
+  { id: 'INDUSB', address: 'INDUSB', bankName: 'IndusInd Bank' },
+  { id: 'UJJIVN', address: 'UJJIVN', bankName: 'Ujjivan Small Finance Bank' },
+  { id: 'JANABK', address: 'JANABK', bankName: 'Jana Small Finance Bank' },
+  { id: 'SCBANK', address: 'SCBANK', bankName: 'Standard Chartered Bank' },
+  { id: 'IDFCFB', address: 'IDFCFB', bankName: 'IDFC First Bank' },
+  { id: 'CanBnk', address: 'CanBnk', bankName: 'Canara Bank' },
+  { id: 'MAHABK', address: 'MAHABK', bankName: 'Maharashtra Bank' },
+  { id: 'OneCrd', address: 'OneCrd', bankName: 'OneCard' },
+  { id: 'TRCRED', address: 'TRCRED', bankName: 'Tru Credit' },
+  { id: 'BRNCHI', address: 'BRNCHI', bankName: 'Branch International' },
+  { id: 'GENERIC', address: 'GENERIC', bankName: 'Generic Bank' },
+];
+
+const [bankAddress, setBankAddress] = useState(defaultBankAddresses[0].address);
+const [bankAddresses, setBankAddresses] = useState(defaultBankAddresses);
 const [transactions, setTransactions] = useState([]);
 const [parsedData, setParsedData] = useState(null);
 const [error, setError] = useState('');
@@ -61,12 +94,19 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
           address: item.address,
           bankName: item.bankName
         }));
-        setBankAddresses(transformedData);
+        // Update bank addresses with API data if available, otherwise keep default
         if (transformedData.length > 0) {
+          setBankAddresses(transformedData);
           setBankAddress(transformedData[0].address);
+        } else if (!bankAddress && defaultBankAddresses.length > 0) {
+          setBankAddress(defaultBankAddresses[0].address);
         }
       } catch (err) {
         console.error('Error fetching bank addresses:', err);
+        // Keep using default bank addresses on error
+        if (!bankAddress && defaultBankAddresses.length > 0) {
+          setBankAddress(defaultBankAddresses[0].address);
+        }
       }
     };
 
