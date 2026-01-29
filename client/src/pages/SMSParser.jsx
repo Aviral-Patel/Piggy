@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useUser } from '../context/UserContext';
 import axios from 'axios';
 
@@ -150,11 +151,13 @@ const SMSParser = () => {
     const { regexPattern, message } = formData;
 
     if (!regexPattern.trim()) {
+      toast.warning('Please enter a regex pattern');
       setMatchResult({ success: false, message: 'Please enter a regex pattern' });
       return;
     }
 
     if (!message.trim()) {
+      toast.warning('Please enter a sample message');
       setMatchResult({ success: false, message: 'Please enter a sample message' });
       return;
     }
@@ -182,11 +185,19 @@ const SMSParser = () => {
         message: response.data.message,
         matchedText: response.data.matchedText
       });
+      
+      if (response.data.success) {
+        toast.success('Pattern matched successfully!');
+      } else {
+        toast.error('Pattern does not match');
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to test regex pattern. Please try again.';
       setMatchResult({
         success: false,
-        message: error.response?.data?.message || 'Failed to test regex pattern. Please try again.'
+        message: errorMessage
       });
+      toast.error(errorMessage);
     } finally {
       setMatching(false);
     }
@@ -195,24 +206,29 @@ const SMSParser = () => {
   const handleSendToApprove = async () => {
     // Validate required fields
     if (!formData.bankAddress.trim()) {
+      toast.warning('Bank Address is required');
       setError('Bank Address is required');
       return;
     }
     if (!formData.bankName.trim()) {
+      toast.warning('Bank Name is required');
       setError('Bank Name is required');
       return;
     }
     if (!formData.regexPattern.trim()) {
+      toast.warning('Regex Pattern is required');
       setError('Regex Pattern is required');
       return;
     }
     if (!formData.message.trim()) {
+      toast.warning('Sample Message is required');
       setError('Sample Message is required');
       return;
     }
 
     // Check if match was successful
     if (!matchResult || !matchResult.success) {
+      toast.warning('Please test the regex pattern first and ensure it matches successfully');
       setError('Please test the regex pattern first and ensure it matches successfully');
       return;
     }
@@ -244,6 +260,7 @@ const SMSParser = () => {
 
       setSuccess('Pattern sent for approval successfully!');
       setPatternId(response.data.id);
+      toast.success('Pattern sent for approval successfully!');
 
       // Clear form after successful save
       setTimeout(() => {
@@ -265,7 +282,9 @@ const SMSParser = () => {
         setSuccess('');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save pattern. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to save pattern. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -273,6 +292,7 @@ const SMSParser = () => {
 
   const handleApprove = async () => {
     if (!patternId) {
+      toast.error('Pattern ID is missing');
       setError('Pattern ID is missing');
       return;
     }
@@ -294,13 +314,16 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern approved successfully!');
+      toast.success('Pattern approved successfully!');
 
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
       }, 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to approve pattern. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to approve pattern. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -308,6 +331,7 @@ const SMSParser = () => {
 
   const handleReject = async () => {
     if (!patternId) {
+      toast.error('Pattern ID is missing');
       setError('Pattern ID is missing');
       return;
     }
@@ -329,13 +353,16 @@ const SMSParser = () => {
       );
 
       setSuccess('Pattern rejected successfully!');
+      toast.info('Pattern rejected');
 
       // Navigate back to template approval page after 1.5 seconds
       setTimeout(() => {
         window.location.href = '/template-approval';
       }, 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reject pattern. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to reject pattern. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }

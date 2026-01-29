@@ -3,6 +3,7 @@ package com.piggy.backend.controller;
 import com.piggy.backend.dto.UpdateUserRoleRequest;
 import com.piggy.backend.dto.UserDTO;
 import com.piggy.backend.service.AdminService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +19,16 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public List<UserDTO> getAllNonAdminUsers() {
-        return adminService.getAllNonAdminUsers();
+    public ResponseEntity<List<UserDTO>> getAllNonAdminUsers() {
+        List<UserDTO> users = adminService.getAllNonAdminUsers();
+        return ResponseEntity.ok(users);
     }
 
     @PutMapping("/users/{userId}/role")
-    public UserDTO updateUserRole(
+    public ResponseEntity<UserDTO> updateUserRole(
             @PathVariable Long userId,
             @RequestBody UpdateUserRoleRequest request) {
-        return adminService.updateUserRole(userId, request);
+        UserDTO updatedUser = adminService.updateUserRole(userId, request);
+        return ResponseEntity.ok(updatedUser);
     }
 }

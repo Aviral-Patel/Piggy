@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const AdminLogin = () => {
@@ -44,11 +45,15 @@ const AdminLogin = () => {
         localStorage.setItem('adminToken', response.data.token);
       }
 
+      toast.success('Admin login successful!');
+      
       // Navigate to admin dashboard after successful login
       navigate('/admin/dashboard');
     } catch (err) {
       console.error('Admin login error:', err);
-      setError(err.response?.data?.message || 'Invalid admin credentials. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Invalid admin credentials. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

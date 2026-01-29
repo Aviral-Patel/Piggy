@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import TransactionCards from '../components/TransactionCards.jsx';
@@ -103,6 +104,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
         }
       } catch (err) {
         console.error('Error fetching bank addresses:', err);
+        toast.error('Failed to load bank addresses. Using default list.');
         // Keep using default bank addresses on error
         if (!bankAddress && defaultBankAddresses.length > 0) {
           setBankAddress(defaultBankAddresses[0].address);
@@ -121,7 +123,10 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
       } catch (err) {
         console.error('Error fetching transactions:', err);
         if (err.response?.status === 401) {
+          toast.error('Session expired. Please login again.');
           navigate('/login');
+        } else {
+          toast.error('Failed to load transactions. Please try again.');
         }
       } finally {
         setFetchingTransactions(false);
@@ -154,7 +159,7 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
     setParsedData(null);
     
     if (!smsText.trim()) {
-      setError('Please enter an SMS message');
+      toast.warning('Please enter an SMS message');
       return;
     }
   
@@ -182,6 +187,8 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
       // Automatically add transaction to the list
       setTransactions([transactionWithSms, ...transactions]);
       
+      toast.success('Transaction parsed and added successfully!');
+      
       // Clear form after successful parse
       setTimeout(() => {
         setSmsText('');
@@ -190,7 +197,9 @@ const [fetchingTransactions, setFetchingTransactions] = useState(true);
     } catch (err) {
       console.error('Error parsing SMS:', err);
       console.error('Error response:', err.response);
-      setError(err.response?.data?.message || 'Failed to parse SMS. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to parse SMS. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setParseLoading(false);
     }

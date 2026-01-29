@@ -4,6 +4,9 @@ import com.piggy.backend.dto.UpdateUserRoleRequest;
 import com.piggy.backend.dto.UserDTO;
 import com.piggy.backend.entity.Role;
 import com.piggy.backend.entity.User;
+import com.piggy.backend.exception.BadRequestException;
+import com.piggy.backend.exception.ForbiddenException;
+import com.piggy.backend.exception.ResourceNotFoundException;
 import com.piggy.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +31,16 @@ public class AdminService {
 
     public UserDTO updateUserRole(Long userId, UpdateUserRoleRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Prevent changing admin role
         if (user.getRole() == Role.ADMIN) {
-            throw new RuntimeException("Cannot modify admin user role");
+            throw new ForbiddenException("Cannot modify admin user role");
+        }
+
+        // Validate the new role
+        if (request.getRole() == null) {
+            throw new BadRequestException("Role is required");
         }
 
         user.setRole(request.getRole());

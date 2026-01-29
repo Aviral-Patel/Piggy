@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 
@@ -33,7 +34,9 @@ const TemplateApproval = () => {
       setTemplates(pendingPatterns);
     } catch (err) {
       console.error('Error fetching pending patterns:', err);
-      setError('Failed to load pending patterns. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to load pending patterns. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import logo from '../assets/p_round.png';
 import { useUser } from '../context/UserContext.jsx';
 import axios from 'axios';
@@ -29,11 +30,13 @@ const Login = () => {
       };
 
       login(userData, response.data.token);
-      console.log('Login successful:', response.data);
+      toast.success('Login successful! Welcome back!');
 
       navigate('/dashboard');
     } catch (error) {
       console.error('Error logging in:', error);
+      const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials and try again.';
+      toast.error(errorMessage);
     }
 
   };

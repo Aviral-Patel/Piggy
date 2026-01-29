@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import logo from '../assets/p_round.png';
 import axios from 'axios';
 import { useUser } from '../context/UserContext.jsx';
@@ -29,15 +30,18 @@ const SignUp = () => {
         // Store user data and token in context
         const userData = {
           username: formData.username,
+          role: response.data.role,
         };
         
         login(userData, response.data.token);
-        console.log('Signup Successful:', response.data);
+        toast.success('Account created successfully! Welcome to Piggy!');
         
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error signing up:', error);
+      const errorMessage = error.response?.data?.message || 'Sign up failed. Please try again.';
+      toast.error(errorMessage);
     }
    
     
