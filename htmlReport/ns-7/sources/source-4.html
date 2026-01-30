@@ -1,0 +1,275 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PatternService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.piggy.backend.service</a>
+</div>
+
+<h1>Coverage Summary for Class: PatternService (com.piggy.backend.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PatternService</td>
+<td class="coverageStat">
+  <span class="percent">
+    10%
+  </span>
+  <span class="absValue">
+    (1/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.9%
+  </span>
+  <span class="absValue">
+    (2/34)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PatternService$BankAddressInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.9%
+  </span>
+  <span class="absValue">
+    (2/41)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.piggy.backend.service;
+&nbsp;
+&nbsp;import com.piggy.backend.dto.RegexMatchResponse;
+&nbsp;import com.piggy.backend.entity.Pattern;
+&nbsp;import com.piggy.backend.entity.PatternStatus;
+&nbsp;import com.piggy.backend.exception.BadRequestException;
+&nbsp;import com.piggy.backend.exception.ResourceNotFoundException;
+&nbsp;import com.piggy.backend.repository.PatternRepository;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import java.util.List;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class PatternService {
+&nbsp;    private final PatternRepository patternRepository;
+&nbsp;
+<b class="fc">&nbsp;    public PatternService(PatternRepository patternRepository) {</b>
+<b class="fc">&nbsp;        this.patternRepository = patternRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Pattern&gt; getApprovedPatterns() {
+<b class="nc">&nbsp;        return patternRepository.findByStatus(PatternStatus.APPROVED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Pattern&gt; getApprovedPatternsByBankAddress(String bankAddress) {
+<b class="nc">&nbsp;        return patternRepository.findApprovedPatternsByBankAddress(bankAddress);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Pattern&gt; getPendingPatterns() {
+<b class="nc">&nbsp;        return patternRepository.findByStatus(PatternStatus.PENDING);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Pattern savePattern(Pattern pattern) {
+<b class="nc">&nbsp;        return patternRepository.save(pattern);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Pattern updatePatternStatus(Long id, PatternStatus status) {
+<b class="nc">&nbsp;        Pattern pattern = patternRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Pattern not found with ID: &quot; + id));</b>
+&nbsp;        
+<b class="nc">&nbsp;        if (status == null) {</b>
+<b class="nc">&nbsp;            throw new BadRequestException(&quot;Status is required&quot;);</b>
+&nbsp;        }
+&nbsp;        
+<b class="nc">&nbsp;        pattern.setStatus(status);</b>
+<b class="nc">&nbsp;        return patternRepository.save(pattern);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;String&gt; getDistinctBankAddresses() {
+<b class="nc">&nbsp;        return patternRepository.findDistinctBankAddresses();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;BankAddressInfo&gt; getBankAddressesWithInfo() {
+<b class="nc">&nbsp;        List&lt;String&gt; addresses = patternRepository.findDistinctBankAddresses();</b>
+<b class="nc">&nbsp;        return addresses.stream()</b>
+<b class="nc">&nbsp;                .map(address -&gt; {</b>
+<b class="nc">&nbsp;                    List&lt;Pattern&gt; patterns = patternRepository.findApprovedPatternsByBankAddress(address);</b>
+<b class="nc">&nbsp;                    if (!patterns.isEmpty()) {</b>
+<b class="nc">&nbsp;                        Pattern firstPattern = patterns.get(0);</b>
+<b class="nc">&nbsp;                        return new BankAddressInfo(address, firstPattern.getBankName());</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    return new BankAddressInfo(address, &quot;Unknown&quot;);</b>
+&nbsp;                })
+<b class="nc">&nbsp;                .collect(Collectors.toList());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public RegexMatchResponse testRegexMatch(String regexPattern, String sampleMessage) {
+&nbsp;        // Validate inputs
+<b class="nc">&nbsp;        if (regexPattern == null || regexPattern.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            return new RegexMatchResponse(false, &quot;Please enter a regex pattern&quot;, null);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (sampleMessage == null || sampleMessage.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            return new RegexMatchResponse(false, &quot;Please enter a sample message&quot;, null);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        try {
+&nbsp;            // Compile regex pattern with case-insensitive flag
+<b class="nc">&nbsp;            java.util.regex.Pattern regexPatternObj = java.util.regex.Pattern.compile(</b>
+&nbsp;                regexPattern, 
+&nbsp;                java.util.regex.Pattern.CASE_INSENSITIVE
+&nbsp;            );
+<b class="nc">&nbsp;            Matcher matcher = regexPatternObj.matcher(sampleMessage);</b>
+&nbsp;
+&nbsp;            // Use Matcher.find() to check if pattern matches
+<b class="nc">&nbsp;            if (matcher.find()) {</b>
+&nbsp;                // Get the matched text
+<b class="nc">&nbsp;                String matchedText = matcher.group(0);</b>
+<b class="nc">&nbsp;                return new RegexMatchResponse(</b>
+&nbsp;                    true,
+&nbsp;                    &quot;✓ Pattern matches! Regex successfully matched the sample message.&quot;,
+&nbsp;                    matchedText
+&nbsp;                );
+&nbsp;            } else {
+<b class="nc">&nbsp;                return new RegexMatchResponse(</b>
+&nbsp;                    false,
+&nbsp;                    &quot;✗ Pattern does not match. The regex pattern did not match the sample message.&quot;,
+&nbsp;                    null
+&nbsp;                );
+&nbsp;            }
+&nbsp;        } catch (Exception e) {
+<b class="nc">&nbsp;            return new RegexMatchResponse(</b>
+&nbsp;                false,
+<b class="nc">&nbsp;                &quot;✗ Invalid regex pattern: &quot; + e.getMessage(),</b>
+&nbsp;                null
+&nbsp;            );
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public static class BankAddressInfo {
+&nbsp;        private String address;
+&nbsp;        private String bankName;
+&nbsp;
+<b class="nc">&nbsp;        public BankAddressInfo(String address, String bankName) {</b>
+<b class="nc">&nbsp;            this.address = address;</b>
+<b class="nc">&nbsp;            this.bankName = bankName;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        public String getAddress() { return address; }</b>
+<b class="nc">&nbsp;        public void setAddress(String address) { this.address = address; }</b>
+<b class="nc">&nbsp;        public String getBankName() { return bankName; }</b>
+<b class="nc">&nbsp;        public void setBankName(String bankName) { this.bankName = bankName; }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-01-30 12:56</div>
+</div>
+</body>
+</html>
