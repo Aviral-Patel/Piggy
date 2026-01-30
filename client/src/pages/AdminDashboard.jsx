@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -17,6 +18,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
+        toast.error('Please login to access admin dashboard');
         navigate('/admin');
         return;
       }
@@ -32,9 +34,12 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Error fetching users:', err);
       if (err.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
         navigate('/admin');
       } else {
-        setError('Failed to load users. Please try again.');
+        const errorMessage = err.response?.data?.message || 'Failed to load users. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -61,9 +66,13 @@ const AdminDashboard = () => {
       setUsers(users.map(user => 
         user.id === userId ? response.data : user
       ));
+      
+      toast.success(`User role updated to ${newRole} successfully!`);
     } catch (err) {
       console.error('Error updating user role:', err);
-      setError(err.response?.data?.message || 'Failed to update user role. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to update user role. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setUpdating({ ...updating, [userId]: false });
     }

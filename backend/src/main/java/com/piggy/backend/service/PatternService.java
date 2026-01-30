@@ -3,6 +3,8 @@ package com.piggy.backend.service;
 import com.piggy.backend.dto.RegexMatchResponse;
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.PatternStatus;
+import com.piggy.backend.exception.BadRequestException;
+import com.piggy.backend.exception.ResourceNotFoundException;
 import com.piggy.backend.repository.PatternRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -35,7 +37,12 @@ public class PatternService {
 
     public Pattern updatePatternStatus(Long id, PatternStatus status) {
         Pattern pattern = patternRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pattern not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pattern not found with ID: " + id));
+        
+        if (status == null) {
+            throw new BadRequestException("Status is required");
+        }
+        
         pattern.setStatus(status);
         return patternRepository.save(pattern);
     }

@@ -101,12 +101,12 @@ export default function Navbar() {
               // Guest User View
               <>
                 <div className="relative group inline-block">
-                  <Link 
-                    to="/login" 
-                    className="relative z-10 text-primary dark:text-secondary px-8 py-3 rounded-full font-semibold hover:bg-secondary dark:hover:bg-gray-700 transition duration-300 inline-block"
+                  <button 
+                    type="button"
+                    className="relative z-10 text-primary dark:text-secondary px-8 py-3 rounded-full font-semibold hover:bg-secondary dark:hover:bg-gray-700 transition duration-300 inline-block cursor-pointer"
                   >
                     Log In
-                  </Link>
+                  </button>
                   <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
                     <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-md dark:shadow-gray-950/50 py-1 min-w-[140px] border border-gray-200 dark:border-gray-700">
                       <Link 

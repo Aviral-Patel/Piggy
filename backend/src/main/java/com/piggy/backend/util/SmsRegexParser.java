@@ -38,7 +38,8 @@ public class SmsRegexParser {
         List<Pattern> approvedPatterns = patternService.getApprovedPatternsByBankAddress(bankAddress);
 
         if (approvedPatterns.isEmpty()) {
-            throw new RuntimeException("No approved patterns found for bank address: " + bankAddress);
+            System.out.println("⚠ No approved patterns found for bank address: " + bankAddress);
+            return null;
         }
 
         for (Pattern pattern : approvedPatterns) {
@@ -49,11 +50,22 @@ public class SmsRegexParser {
             Matcher matcher = regex.matcher(sms);
 
             if (matcher.find()) {
-                return buildTransaction(matcher, pattern, bankAddress);
+                System.out.println("✓ Pattern matched for bank address: " + bankAddress);
+                Transaction transaction = buildTransaction(matcher, pattern, bankAddress);
+                
+                // If transaction is null, pattern didn't have required fields (like amount)
+                // Continue to try other patterns
+                if (transaction == null) {
+                    System.out.println("⚠ Pattern matched but transaction build failed - trying next pattern");
+                    continue;
+                }
+                
+                return transaction;
             }
         }
 
-        throw new RuntimeException("No matching pattern found for SMS from bank address: " + bankAddress);
+        System.out.println("⚠ No matching pattern found for SMS from bank address: " + bankAddress);
+        return null;
     }
 
     /**
@@ -62,6 +74,9 @@ public class SmsRegexParser {
      */
     private Transaction buildTransaction(Matcher matcher, Pattern pattern, String bankAddress) {
         Transaction transaction = new Transaction();
+
+        // Store original SMS for intelligent type detection
+        String smsContent = matcher.group(0); // Full matched text
 
         // —— From Pattern entity only (never overridden by regex) ——
         transaction.setBankAddress(pattern.getBankAddress());
@@ -73,24 +88,43 @@ public class SmsRegexParser {
             transaction.setAccountNumber(matcher.group("accountNumber"));
         } catch (Exception e) { /* skip */ }
 
+        // Determine transaction type first
+        TransactionType transactionType;
         try {
             String type = matcher.group("type");
-            transaction.setType(normalizeType(type));
+            transactionType = normalizeType(type, smsContent);
         } catch (Exception e) {
-            transaction.setType(TransactionType.DEBITED);
+            // No type in regex - intelligently determine from SMS content
+            transactionType = detectTypeFromContent(smsContent);
         }
+        transaction.setType(transactionType);
 
+        // Extract amount - optional for ALERT/REMINDER, required for DEBITED/CREDITED
         try {
             String amountStr = matcher.group("amount");
             if (amountStr == null || amountStr.isBlank()) {
-                throw new IllegalArgumentException("Amount group is empty");
+                System.out.println("⚠ Amount field is empty or null - pattern may be for notification/alert message");
+                // Don't set amount - leave it null (okay for ALERT/REMINDER)
+            } else {
+                amountStr = amountStr.replace(",", "").trim();
+                transaction.setAmount(new BigDecimal(amountStr));
             }
-            amountStr = amountStr.replace(",", "").trim();
-            transaction.setAmount(new BigDecimal(amountStr));
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Failed to extract amount from SMS: " + e.getMessage(), e);
+            // Amount group doesn't exist in pattern
+            System.out.println("⚠ Amount group not found in pattern - checking if this is an alert/reminder");
+            
+            // If it's ALERT or REMINDER, missing amount is acceptable
+            if (transactionType == TransactionType.ALERT || transactionType == TransactionType.REMINDER) {
+                System.out.println("✓ Type is ALERT/REMINDER - continuing without amount");
+                // Leave amount as null - this is fine for alerts/reminders
+            } else {
+                // For DEBITED/CREDITED, amount is required
+                System.out.println("✗ Type is DEBITED/CREDITED but no amount found - invalid transaction pattern");
+                return null;
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Amount group missing or invalid in pattern (expected named group 'amount')", e);
+            System.err.println("✗ Error extracting amount: " + e.getMessage());
+            return null;
         }
 
         try {
@@ -129,12 +163,92 @@ public class SmsRegexParser {
         return transaction;
     }
 
-    private static TransactionType normalizeType(String type) {
-        if (type == null || type.isBlank()) return TransactionType.DEBITED;
+    private static TransactionType normalizeType(String type, String smsContent) {
+        if (type == null || type.isBlank()) {
+            // No type specified in regex - intelligently detect from content
+            return detectTypeFromContent(smsContent);
+        }
         String u = type.toUpperCase();
-        if (u.contains("CREDIT") || "CREDITED".equals(u)) return TransactionType.CREDITED;
-        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u)) return TransactionType.DEBITED;
-        return TransactionType.DEBITED;
+        if (u.contains("CREDIT") || "CREDITED".equals(u) || u.contains("RECEIVED")) return TransactionType.CREDITED;
+        if (u.contains("SPENT") || u.contains("DEBIT") || "DEBITED".equals(u) || 
+            u.contains("USED") || u.contains("CHARGED") || u.contains("WITHDRAWN")) return TransactionType.DEBITED;
+        if (u.contains("ALERT") || "ALERT".equals(u)) return TransactionType.ALERT;
+        if (u.contains("REMINDER") || "REMINDER".equals(u)) return TransactionType.REMINDER;
+        // If type is specified but not recognized, check content
+        return detectTypeFromContent(smsContent);
+    }
+
+    /**
+     * Intelligently detect transaction type based on SMS content keywords.
+     * Only returns DEBITED/CREDITED if clear transaction keywords are found.
+     * Otherwise defaults to ALERT/REMINDER for notification-type messages.
+     */
+    private static TransactionType detectTypeFromContent(String smsContent) {
+        if (smsContent == null || smsContent.isBlank()) {
+            return TransactionType.ALERT;
+        }
+        
+        String content = smsContent.toLowerCase();
+        
+        // Check for CREDITED/RECEIVED keywords
+        if (content.contains("credited") || 
+            content.contains("received") || 
+            content.contains("deposited") ||
+            content.contains("credit to") ||
+            content.contains("added to") ||
+            content.matches(".*\\bcr\\b.*") || // CR = Credit
+            content.contains("refund") ||
+            content.contains("payment received")) {
+            return TransactionType.CREDITED;
+        }
+        
+        // Check for DEBITED/SPENT keywords
+        // Including card transaction patterns
+        if (content.contains("debited") || 
+            content.contains("spent") || 
+            content.contains("withdrawn") ||
+            content.contains("deducted") ||
+            content.contains("transferred") ||
+            content.contains("paid") ||
+            content.contains("purchase") ||
+            content.matches(".*\\bdr\\b.*") || // DR = Debit
+            // Card transaction patterns
+            (content.contains("transaction") && (content.contains("debit card") || content.contains("credit card"))) ||
+            content.contains("has been used") ||
+            content.contains("has been spent") ||
+            content.contains("has been charged") ||
+            (content.matches(".*transaction of rs\\..*") && content.matches(".*(debit card|credit card).*"))) {
+            return TransactionType.DEBITED;
+        }
+        
+        // Check for REMINDER keywords
+        if (content.contains("reminder") || 
+            content.contains("due") || 
+            content.contains("upcoming") ||
+            content.contains("scheduled") ||
+            content.contains("will auto-debit") ||
+            content.contains("payment due")) {
+            return TransactionType.REMINDER;
+        }
+        
+        // Check for ALERT keywords (overdue, default, statement, etc.)
+        if (content.contains("alert") || 
+            content.contains("overdue") || 
+            content.contains("default") ||
+            content.contains("failed") ||
+            content.contains("statement") ||
+            content.contains("reported") ||
+            content.contains("notification") ||
+            content.contains("please ignore if") ||
+            content.contains("ignore if paid") ||
+            content.contains("declined") ||
+            content.contains("limit exceeded")) {
+            return TransactionType.ALERT;
+        }
+        
+        // If no clear keywords found, default to ALERT (notification)
+        // This is safer than defaulting to DEBITED for unknown messages
+        return TransactionType.ALERT;
     }
 
     private static LocalDate parseDate(String dateStr) {

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import logo from '../assets/p_round.png';
+import logoHappy from '../assets/logo_happy.png';
 import axios from 'axios';
 import { useUser } from '../context/UserContext.jsx';
 
@@ -29,27 +31,35 @@ const SignUp = () => {
         // Store user data and token in context
         const userData = {
           username: formData.username,
+          role: response.data.role,
         };
         
         login(userData, response.data.token);
-        console.log('Signup Successful:', response.data);
+        toast.success('Account created successfully! Welcome to Piggy!');
         
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error signing up:', error);
+      const errorMessage = error.response?.data?.message || 'Sign up failed. Please try again.';
+      toast.error(errorMessage);
     }
    
     
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="max-w-md w-full space-y-8 relative z-10">
         {/* Logo and Title */}
         <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <img src={logoHappy} alt="Happy Piggy Logo" className="h-32 w-32 object-contain animate-bounce-slow" />
+            </div>
+          </div>
           <div className="flex justify-center items-center gap-0.5 mb-4">
-            <img src={logo} alt="Piggy Logo" className="h-14 w-14" />
+            <img src={logo} alt="Piggy Logo" className="h-10 w-10" />
             <h2 className="text-3xl font-bold italic text-primary dark:text-secondary">Piggy</h2>
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">Create your account</h2>
@@ -62,7 +72,7 @@ const SignUp = () => {
         </div>
 
         {/* Signup Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl dark:shadow-gray-950/50 border border-gray-200 dark:border-gray-700" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">

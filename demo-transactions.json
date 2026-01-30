@@ -1,0 +1,162 @@
+[
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 450.00 on 28-Jan-26 via UPI to SWIGGY. Avl Bal: INR 25,420.50. Ref No: 60123456789"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 850.00 on date 27Jan26 trf to ZOMATO Refno 871684140146 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 1,200.00 on 26-Jan-26. Info: UPI-DOMINOS. Total Avl Bal: INR 24,301.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 2,100.00 on Kotak Bank Debit Card XX9123 at McDONALDS on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 675.00 on 2026-01-24 via STARBUCKS. Available Bal: Rs 23,626.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 3,500.00 on 28-Jan-26 via UPI to AMAZON. Avl Bal: INR 20,126.00. Ref No: 60123456790"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 5,240.00 on date 27Jan26 trf to FLIPKART Refno 871684140150 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 2,890.00 on 26-Jan-26. Info: UPI-MYNTRA. Total Avl Bal: INR 14,886.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 8,999.00 on Kotak Bank Debit Card XX9123 at AJIO on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 1,450.00 on 2026-01-24 via SHOPPERS STOP. Available Bal: Rs 5,887.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 799.00 on 28-Jan-26 via UPI to NETFLIX. Avl Bal: INR 5,088.00. Ref No: 60123456791"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 1,499.00 on date 27Jan26 trf to AMAZON PRIME Refno 871684140151 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 299.00 on 26-Jan-26. Info: UPI-SPOTIFY. Total Avl Bal: INR 3,589.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 500.00 on Kotak Bank Debit Card XX9123 at BOOKMYSHOW on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 2,500.00 on 2026-01-24 via INOX CINEMA. Available Bal: Rs 3,089.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 350.00 on 28-Jan-26 via UPI to UBER. Avl Bal: INR 2,739.00. Ref No: 60123456792"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 275.00 on date 27Jan26 trf to OLA CABS Refno 871684140152 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 180.00 on 26-Jan-26. Info: UPI-RAPIDO. Total Avl Bal: INR 2,464.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 1,250.00 on Kotak Bank Debit Card XX9123 at INDIAN OIL on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 890.00 on 2026-01-24 via BHARAT PETROLEUM. Available Bal: Rs 1,214.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 2,450.00 on 28-Jan-26 via UPI to ELECTRICITY BILL. Avl Bal: INR 28,764.00. Ref No: 60123456793"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 1,800.00 on date 27Jan26 trf to WATER BILL Refno 871684140153 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 3,200.00 on 26-Jan-26. Info: BBPS-DTH RECHARGE. Total Avl Bal: INR 26,964.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 599.00 on Kotak Bank Debit Card XX9123 at AIRTEL BROADBAND on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 899.00 on 2026-01-24 via JIO FIBER. Available Bal: Rs 25,465.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 450.00 on 28-Jan-26 via UPI to SALON. Avl Bal: INR 25,015.00. Ref No: 60123456794"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 850.00 on date 27Jan26 trf to BOOK STORE Refno 871684140154 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 1,500.00 on 26-Jan-26. Info: UPI-GYM MEMBERSHIP. Total Avl Bal: INR 24,165.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 2,400.00 on Kotak Bank Debit Card XX9123 at MEDICAL STORE on 25-Jan-26."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 3,500.00 on 2026-01-24 via HOSPITAL. Available Bal: Rs 21,765.00."
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 credited with INR 50,000.00 on 28-Jan-26 from SALARY. Avl Bal: INR 71,765.00. Ref No: 60123456795"
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 credited by 5,000.00 on date 27Jan26 trf from JOHN DOE Refno 871684140155. Avl bal INR 76,765.00-SBI"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 credited with INR 2,500.00 on 26-Jan-26. Info: UPI-REFUND AMAZON. Total Avl Bal: INR 79,265.00."
+  },
+  {
+    "address": "FEDBNK",
+    "message": "Hi, Rs.10000 credited in your A/c XX7847 on 25JAN2026 14:03:16 using cash deposit machine at FBL-FBL-BRANCH. Current Bal: Rs.89265.00"
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is credited with Rs 3,500.00 on 2026-01-24 via FREELANCE PAYMENT. Available Bal: Rs 92,765.00."
+  },
+  {
+    "address": "PNBSMS",
+    "message": "Installment of Rs 8430.93 in loan A/c No XXXXXB00491911 is falling due on 31-01-2026.Total Amt. due 8430.93.Pl ignoreif deposited UPDATE YOUR EMAILID IN ACCOUNT-PNB"
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "ALERT: Credit Card payment of INR 15,000.00 is due on 05-Feb-26 for Card XX5678. Min amount due: INR 750.00. Please pay to avoid late fee."
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "REMINDER: Your loan EMI of INR 12,500.00 is due on 01-Feb-26 for Loan A/c XX101. Please ensure sufficient balance. For queries call 1860-120-7777."
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "ALERT: Minimum balance of Rs 5000 is not maintained in your A/C X6292. Current balance: Rs 3250. Charges may apply. Please deposit to avoid penalty-SBI"
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "REMINDER: Your insurance premium of Rs. 5,600.00 is due on 03-Feb-26 for Policy XX9123. Pay now to keep your policy active."
+  }
+]

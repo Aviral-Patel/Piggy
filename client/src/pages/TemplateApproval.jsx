@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 
@@ -33,20 +34,24 @@ const TemplateApproval = () => {
       setTemplates(pendingPatterns);
     } catch (err) {
       console.error('Error fetching pending patterns:', err);
-      setError('Failed to load pending patterns. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Failed to load pending patterns. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const handleCheck = (template) => {
-    // Navigate to SMSParser with all pattern data
+    // Navigate to SMSParser with all pattern data (including stored merchantName and type)
     navigate('/sms-parser', {
       state: {
         id: template.id,
         patternId: template.id,
         bankAddress: template.bankAddress,
         bankName: template.bankName,
+        merchantName: template.merchantName,
+        type: template.type,
         regexPattern: template.regexPattern,
         pattern: template.regexPattern,
         message: template.message,

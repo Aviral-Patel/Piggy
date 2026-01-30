@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GlobalExceptionHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.piggy.backend.exception</a>
+</div>
+
+<h1>Coverage Summary for Class: GlobalExceptionHandler (com.piggy.backend.exception)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GlobalExceptionHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    11.1%
+  </span>
+  <span class="absValue">
+    (1/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.4%
+  </span>
+  <span class="absValue">
+    (1/41)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.piggy.backend.exception;
+&nbsp;
+&nbsp;import com.piggy.backend.dto.ErrorResponse;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.authentication.BadCredentialsException;
+&nbsp;import org.springframework.web.bind.annotation.ExceptionHandler;
+&nbsp;import org.springframework.web.bind.annotation.RestControllerAdvice;
+&nbsp;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;
+&nbsp;@RestControllerAdvice
+<b class="fc">&nbsp;public class GlobalExceptionHandler {</b>
+&nbsp;
+&nbsp;    @ExceptionHandler(ResourceNotFoundException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleResourceNotFoundException(
+&nbsp;            ResourceNotFoundException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.NOT_FOUND.value(),</b>
+&nbsp;                &quot;Not Found&quot;,
+<b class="nc">&nbsp;                ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.NOT_FOUND);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(BadRequestException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleBadRequestException(
+&nbsp;            BadRequestException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.BAD_REQUEST.value(),</b>
+&nbsp;                &quot;Bad Request&quot;,
+<b class="nc">&nbsp;                ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.BAD_REQUEST);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(UnauthorizedException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleUnauthorizedException(
+&nbsp;            UnauthorizedException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.UNAUTHORIZED.value(),</b>
+&nbsp;                &quot;Unauthorized&quot;,
+<b class="nc">&nbsp;                ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.UNAUTHORIZED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(ForbiddenException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleForbiddenException(
+&nbsp;            ForbiddenException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.FORBIDDEN.value(),</b>
+&nbsp;                &quot;Forbidden&quot;,
+<b class="nc">&nbsp;                ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.FORBIDDEN);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(BadCredentialsException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleBadCredentialsException(
+&nbsp;            BadCredentialsException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.UNAUTHORIZED.value(),</b>
+&nbsp;                &quot;Unauthorized&quot;,
+&nbsp;                &quot;Invalid username or password&quot;,
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.UNAUTHORIZED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(NoSuchElementException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleNoSuchElementException(
+&nbsp;            NoSuchElementException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.NOT_FOUND.value(),</b>
+&nbsp;                &quot;Not Found&quot;,
+&nbsp;                &quot;The requested resource was not found&quot;,
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.NOT_FOUND);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(IllegalArgumentException.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleIllegalArgumentException(
+&nbsp;            IllegalArgumentException ex,
+&nbsp;            HttpServletRequest request) {
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.BAD_REQUEST.value(),</b>
+&nbsp;                &quot;Bad Request&quot;,
+<b class="nc">&nbsp;                ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.BAD_REQUEST);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(Exception.class)
+&nbsp;    public ResponseEntity&lt;ErrorResponse&gt; handleGenericException(
+&nbsp;            Exception ex,
+&nbsp;            HttpServletRequest request) {
+&nbsp;        // Log the full exception for debugging
+<b class="nc">&nbsp;        System.err.println(&quot;Unexpected error occurred:&quot;);</b>
+<b class="nc">&nbsp;        ex.printStackTrace();</b>
+&nbsp;        
+<b class="nc">&nbsp;        ErrorResponse error = new ErrorResponse(</b>
+<b class="nc">&nbsp;                HttpStatus.INTERNAL_SERVER_ERROR.value(),</b>
+&nbsp;                &quot;Internal Server Error&quot;,
+<b class="nc">&nbsp;                &quot;An unexpected error occurred: &quot; + ex.getMessage(),</b>
+<b class="nc">&nbsp;                request.getRequestURI()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(error, HttpStatus.INTERNAL_SERVER_ERROR);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-01-30 12:56</div>
+</div>
+</body>
+</html>

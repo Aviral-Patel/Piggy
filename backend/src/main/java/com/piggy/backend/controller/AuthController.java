@@ -8,6 +8,8 @@ import com.piggy.backend.entity.User;
 import com.piggy.backend.service.AuthService;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -23,30 +25,34 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse register(
+    public ResponseEntity<AuthResponse> register(
             @RequestBody RegisterRequest request) {
-        return authService.register(request);
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(
+    public ResponseEntity<AuthResponse> login(
             @RequestBody AuthRequest request) {
-        return authService.login(request);
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/admin/login")
-    public AuthResponse adminLogin(
+    public ResponseEntity<AuthResponse> adminLogin(
             @RequestBody AuthRequest request) {
-        return authService.adminLogin(request);
+        AuthResponse response = authService.adminLogin(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
-    public UserDTO getCurrentUser() {
+    public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         
         User user = authService.getUserByUsername(username);
-        return new UserDTO(user.getId(), user.getUsername(), user.getRole());
+        UserDTO userDTO = new UserDTO(user.getId(), user.getUsername(), user.getRole());
+        return ResponseEntity.ok(userDTO);
     }
     
 }

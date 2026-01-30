@@ -1,0 +1,42 @@
+[
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 350.00 on date 14Jan26 trf to SWIGGY Refno 871684140146 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 2,500.00 on 10-Jan-26 via UPI to ZOMATO. Avl Bal: INR 15,420.50. Ref No: 60123456789"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 1,200.00 on 19-Jan-26. Info: BBPS-ELECTRICITY. Total Avl Bal: INR 8,501.00."
+  },
+  {
+    "address": "JD-AXISBK",
+    "message": "Your A/c X9901 is debited for Rs 550.00 on 2026-01-10 via SWIGGY. Available Bal: Rs 8,450.00."
+  },
+  {
+    "address": "KM-KOTAKB",
+    "message": "Transaction of Rs. 475.00 on Kotak Bank Debit Card XX9123 at SWIGGY on 15-Jan-26."
+  },
+  {
+    "address": "BZ-SBIINB",
+    "message": "Dear UPI user A/C X6292 debited by 199.00 on date 15Jan26 trf to NETFLIX Refno 871684140147 If not u? call-1800111109-SBI"
+  },
+  {
+    "address": "VM-HDFCBK",
+    "message": "Alert: Your A/c XX5678 debited for INR 3,200.00 on 11-Jan-26 via UPI to AMAZON. Avl Bal: INR 10,521.50. Ref No: 60123456793"
+  },
+  {
+    "address": "AX-ICICIB",
+    "message": "Dear Customer, your Acct XX101 debited with INR 450.00 on 20-Jan-26. Info: UPI-UBER. Total Avl Bal: INR 8,051.00."
+  },
+  {
+    "address": "FEDBNK",
+    "message": "Hi, Rs.2000 credited in your A/c XX7847 on 18JAN2026 14:03:16 using cash deposit machine at FBL-FBL-EKM/PANAMPILY. Current Bal: Rs.2072.38"
+  },
+  {
+    "address": "PNBSMS",
+    "message": "Installment of Rs 8430.93 in loan A/c No XXXXXB00491911 is falling due on 31-01-2026.Total Amt. due 8430.93.Pl ignoreif deposited UPDATE YOUR EMAILID IN ACCOUNT-PNB"
+  }
+]
