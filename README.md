@@ -185,26 +185,6 @@ React (Vite)  ──▶  Spring Boot REST API  ──▶  MySQL / DB
 
 ---
 
-## ▶️ Running Locally
-
-### Backend
-
-```bash
-./mvnw spring-boot:run
-```
-
-### Frontend
-
-```bash
-npm install
-npm run dev
-```
-
-* App: `http://localhost:5173`
-* Admin: `http://localhost:5173/admin`
-
----
-
 ## 🤖 AI-Usage Log
 
 **Purpose:** AI is used only during **development** of this project—not in the runtime app. Parsing is regex-based (`SmsRegexParser`); no LLM/AI runs in production.
@@ -251,3 +231,278 @@ npm run dev
    - Troubleshooting API connection failures, 404/500 errors, and request-response mismatches
    - Identifying root causes when frontend-backend integration breaks (CORS, authentication, malformed requests)
    - Example: "Why is /api/transactions/parse returning 403 Forbidden even though user is logged in?"
+
+---
+
+## 🚀 Local Development Setup (macOS)
+
+Follow this guide to clone and run Piggy on your Mac.
+
+---
+
+### 📋 Prerequisites
+
+Ensure you have the following installed:
+
+| Tool | Version | Check Command |
+|------|---------|---------------|
+| **Java** | 21+ | `java -version` |
+| **Node.js** | 18+ | `node -v` |
+| **npm** | 9+ | `npm -v` |
+| **MySQL** | 8.0+ | `mysql --version` |
+| **Git** | Any recent version | `git --version` |
+
+---
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/your-username/Piggy.git
+cd Piggy
+```
+
+---
+
+### Step 2: Set Up MySQL Database
+
+1. **Start MySQL service** (if not running):
+
+   ```bash
+   brew services start mysql
+   ```
+
+2. **Create the database**:
+
+   ```bash
+   mysql -u root -p
+   ```
+
+   Then run:
+
+   ```sql
+   CREATE DATABASE piggy_db;
+   CREATE USER 'piggy_user'@'localhost' IDENTIFIED BY 'your_secure_password';
+   GRANT ALL PRIVILEGES ON piggy_db.* TO 'piggy_user'@'localhost';
+   FLUSH PRIVILEGES;
+   EXIT;
+   ```
+
+---
+
+### Step 3: Configure Backend
+
+1. **Navigate to backend directory**:
+
+   ```bash
+   cd backend
+   ```
+
+2. **Create application.properties**:
+
+   ```bash
+   cp src/main/resources/application.properties.example src/main/resources/application.properties
+   ```
+
+3. **Edit the configuration file** (`src/main/resources/application.properties`):
+
+   ```properties
+   spring.application.name=backend
+
+   # MySQL Configuration
+   spring.datasource.url=jdbc:mysql://localhost:3306/piggy_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+   spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+   spring.datasource.username=piggy_user
+   spring.datasource.password=your_secure_password
+
+   # JPA/Hibernate
+   spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=true
+   spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+   spring.jpa.defer-datasource-initialization=true
+   spring.sql.init.mode=always
+
+   logging.level.org.springframework.jdbc.datasource.init=DEBUG
+
+   # JWT Configuration
+   jwt.secret=YOUR_BASE64_ENCODED_SECRET_KEY
+   jwt.expiration-ms=86400000
+   ```
+
+4. **Generate a JWT secret key**:
+
+   ```bash
+   openssl rand -base64 32
+   ```
+
+   Copy the output and replace `YOUR_BASE64_ENCODED_SECRET_KEY` in the properties file.
+
+---
+
+### Step 4: Run the Backend
+
+From the `backend` directory:
+
+```bash
+# Using Maven wrapper (recommended)
+./mvnw spring-boot:run
+
+# Or if Maven is installed globally
+mvn spring-boot:run
+```
+
+**Expected output**:
+```
+Started BackendApplication in X.XXX seconds
+```
+
+The backend API will be available at: `http://localhost:8080`
+
+---
+
+### Step 5: Set Up and Run the Frontend
+
+1. **Open a new terminal** and navigate to the client directory:
+
+   ```bash
+   cd Piggy/client
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**:
+
+   ```bash
+   npm run dev
+   ```
+
+**Expected output**:
+```
+VITE vX.X.X  ready in XXX ms
+
+➜  Local:   http://localhost:5173/
+➜  Network: use --host to expose
+```
+
+---
+
+### Step 6: Access the Application
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:5173` | Main Application (User Login) |
+| `http://localhost:5173/admin` | Admin Panel |
+| `http://localhost:8080` | Backend API |
+
+---
+
+### 🧪 Testing the Setup
+
+1. **Create a new user account**:
+   - Go to `http://localhost:5173/signup`
+   - Register with email and password
+
+2. **Login and access dashboard**:
+   - Go to `http://localhost:5173/login`
+   - Login with your credentials
+   - You should see the Dashboard
+
+3. **Test SMS parsing**:
+   - On the Dashboard, select a bank
+   - Paste a sample bank SMS
+   - Click parse to see the transaction
+
+---
+
+### 🔧 Running Tests
+
+**Backend tests**:
+
+```bash
+cd backend
+./mvnw test
+```
+
+**Frontend lint check**:
+
+```bash
+cd client
+npm run lint
+```
+
+---
+
+### 📁 Project Directory Structure
+
+```
+Piggy/
+├── backend/                 # Spring Boot backend
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/       # Java source code
+│   │   │   └── resources/  # Configuration files
+│   │   └── test/           # Test files
+│   ├── pom.xml             # Maven dependencies
+│   └── mvnw                # Maven wrapper
+│
+├── client/                  # React frontend
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── context/        # React contexts
+│   │   └── assets/         # Images and icons
+│   ├── package.json        # npm dependencies
+│   └── vite.config.js      # Vite configuration
+│
+└── README.md               # This file
+```
+
+---
+
+### ⚠️ Common Issues & Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **MySQL connection refused** | Ensure MySQL service is running and credentials are correct |
+| **Port 8080 already in use** | Kill the process using the port: `lsof -ti:8080 \| xargs kill -9` |
+| **Port 5173 already in use** | Kill the process: `lsof -ti:5173 \| xargs kill -9` |
+| **Maven wrapper permission denied** | Run: `chmod +x mvnw` |
+| **npm install fails** | Delete `node_modules` and `package-lock.json`, then retry |
+| **JWT authentication errors** | Ensure `jwt.secret` is properly configured and base64 encoded |
+| **CORS errors** | Backend must be running on port 8080 for frontend to connect |
+
+---
+
+### 🔄 Development Workflow
+
+1. **Start backend first** (Terminal 1):
+   ```bash
+   cd backend && ./mvnw spring-boot:run
+   ```
+
+2. **Start frontend** (Terminal 2):
+   ```bash
+   cd client && npm run dev
+   ```
+
+3. **Make changes**:
+   - Backend changes require restart (or use Spring DevTools for hot reload)
+   - Frontend changes hot-reload automatically via Vite
+
+4. **Check logs**:
+   - Backend logs appear in Terminal 1
+   - Frontend errors appear in browser console
+
+---
+
+### 🛑 Stopping the Application
+
+- **Backend**: Press `Ctrl + C` in the terminal running Spring Boot
+- **Frontend**: Press `Ctrl + C` in the terminal running Vite
+- **MySQL**: 
+  ```bash
+  brew services stop mysql
+  ```
