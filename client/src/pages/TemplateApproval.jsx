@@ -44,6 +44,7 @@ const TemplateApproval = () => {
 
   const handleCheck = (template) => {
     // Navigate to SMSParser with all pattern data (including stored merchantName and type)
+    // Category removed - now auto-detected via Gemini API when parsing messages
     navigate('/sms-parser', {
       state: {
         id: template.id,
@@ -56,7 +57,6 @@ const TemplateApproval = () => {
         pattern: template.regexPattern,
         message: template.message,
         sampleMsg: template.message,
-        category: template.category,
         status: template.status
       }
     });

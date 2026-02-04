@@ -1,8 +1,10 @@
 package com.piggy.backend.util;
 
+import com.piggy.backend.entity.Category;
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.Transaction;
 import com.piggy.backend.entity.TransactionType;
+import com.piggy.backend.service.GeminiCategorizationService;
 import com.piggy.backend.service.PatternService;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +31,11 @@ public class SmsRegexParser {
     };
 
     private final PatternService patternService;
+    private final GeminiCategorizationService geminiService;
 
-    public SmsRegexParser(PatternService patternService) {
+    public SmsRegexParser(PatternService patternService, GeminiCategorizationService geminiService) {
         this.patternService = patternService;
+        this.geminiService = geminiService;
     }
 
     public Transaction parse(String sms, String bankAddress) {
@@ -81,7 +85,6 @@ public class SmsRegexParser {
         // —— From Pattern entity only (never overridden by regex) ——
         transaction.setBankAddress(pattern.getBankAddress());
         transaction.setBankName(pattern.getBankName());
-        transaction.setCategory(pattern.getCategory());
 
         // —— From regex extraction only (fields not in pattern entity) ——
         try {
@@ -127,12 +130,28 @@ public class SmsRegexParser {
             return null;
         }
 
+        // Extract merchant name
+        String merchant = "Unknown";
         try {
-            String merchant = matcher.group("merchant");
-            transaction.setMerchant(merchant != null ? merchant.trim() : "Unknown");
+            String extractedMerchant = matcher.group("merchant");
+            merchant = extractedMerchant != null ? extractedMerchant.trim() : "Unknown";
         } catch (Exception e) {
-            transaction.setMerchant("Unknown");
+            // No merchant group in pattern
         }
+        transaction.setMerchant(merchant);
+
+        // —— Category: Use Gemini API to auto-categorize based on merchant name ——
+        Category category;
+        if (geminiService.isEnabled()) {
+            // Use Gemini to categorize based on merchant and SMS content
+            category = geminiService.categorize(merchant, smsContent);
+            System.out.println("✓ Auto-categorized via Gemini: " + merchant + " -> " + category);
+        } else {
+            // Gemini not enabled - default to OTHERS
+            category = Category.OTHERS;
+            System.out.println("⚠ Gemini not enabled - defaulting to OTHERS category");
+        }
+        transaction.setCategory(category);
 
         try {
             String dateStr = matcher.group("date");

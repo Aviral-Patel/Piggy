@@ -2,7 +2,6 @@ package com.piggy.backend.dto;
 
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.PatternStatus;
-import com.piggy.backend.entity.Category;
 
 public class PatternDTO {
     private Long id;
@@ -12,7 +11,7 @@ public class PatternDTO {
     private String type;
     private String regexPattern;
     private String message;
-    private Category category;
+    // Category removed - now auto-detected via Gemini API based on merchant name
     private PatternStatus status;
 
     public PatternDTO() {}
@@ -25,7 +24,6 @@ public class PatternDTO {
         this.type = pattern.getType();
         this.regexPattern = pattern.getRegexPattern();
         this.message = pattern.getMessage();
-        this.category = pattern.getCategory();
         this.status = pattern.getStatus();
     }
 
@@ -84,14 +82,6 @@ public class PatternDTO {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 
     public PatternStatus getStatus() {
