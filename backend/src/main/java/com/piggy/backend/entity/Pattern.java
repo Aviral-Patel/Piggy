@@ -28,9 +28,7 @@ public class Pattern {
     @Column(nullable = false)
     private String message;
 
-    @Enumerated(EnumType.STRING)
-    @Column
-    private Category category;
+    // Category removed - now auto-detected via Gemini API based on merchant name
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,9 +55,6 @@ public class Pattern {
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
-
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
 
     public PatternStatus getStatus() { return status; }
     public void setStatus(PatternStatus status) { this.status = status; }

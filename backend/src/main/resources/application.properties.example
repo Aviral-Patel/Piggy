@@ -18,3 +18,20 @@ logging.level.org.springframework.jdbc.datasource.init=DEBUG
 # JWT (generate secret with: openssl rand -base64 32)
 jwt.secret=your_jwt_secret_key
 jwt.expiration-ms=86400000
+
+# ===========================================
+# Gemini API Configuration (auto-categorization)
+# ===========================================
+# Get your free API key from: https://aistudio.google.com/apikey
+# 
+# Steps to get API key:
+# 1. Go to https://aistudio.google.com/apikey
+# 2. Sign in with Google account
+# 3. Click "Create API Key"
+# 4. Copy the key and paste below
+#
+# Example key format: AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# ===========================================
+gemini.enabled=true
+gemini.api.key=your_gemini_api_key
+gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent

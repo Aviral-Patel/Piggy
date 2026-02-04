@@ -1,6 +1,5 @@
 package com.piggy.backend.dto;
 
-import com.piggy.backend.entity.Category;
 import com.piggy.backend.entity.Pattern;
 import com.piggy.backend.entity.PatternStatus;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ class PatternDTOTest {
         pattern.setType("DEBIT");
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited");
         pattern.setMessage("Rs.500 debited from A/c XX1234");
-        pattern.setCategory(Category.SHOPPING);
+        // Category removed - now auto-detected via Gemini API
         pattern.setStatus(PatternStatus.APPROVED);
 
         PatternDTO dto = new PatternDTO(pattern);
@@ -36,7 +35,6 @@ class PatternDTOTest {
         assertEquals("DEBIT", dto.getType());
         assertEquals("Rs\\.(?<amount>[\\d,]+).*debited", dto.getRegexPattern());
         assertEquals("Rs.500 debited from A/c XX1234", dto.getMessage());
-        assertEquals(Category.SHOPPING, dto.getCategory());
         assertEquals(PatternStatus.APPROVED, dto.getStatus());
     }
 
@@ -90,12 +88,7 @@ class PatternDTOTest {
         assertEquals("Rs.1000 credited to your account", dto.getMessage());
     }
 
-    @Test
-    void testSetAndGetCategory() {
-        PatternDTO dto = new PatternDTO();
-        dto.setCategory(Category.FOOD);
-        assertEquals(Category.FOOD, dto.getCategory());
-    }
+    // Category removed from PatternDTO - now auto-detected via Gemini API
 
     @Test
     void testSetAndGetStatus() {
@@ -116,18 +109,11 @@ class PatternDTOTest {
         assertNull(dto.getType());
         assertNull(dto.getRegexPattern());
         assertNull(dto.getMessage());
-        assertNull(dto.getCategory());
+        // Category removed - now auto-detected via Gemini API
         assertNull(dto.getStatus());
     }
 
-    @Test
-    void testAllCategories() {
-        PatternDTO dto = new PatternDTO();
-        for (Category category : Category.values()) {
-            dto.setCategory(category);
-            assertEquals(category, dto.getCategory());
-        }
-    }
+    // Category tests removed - category is now auto-detected via Gemini API
 
     @Test
     void testAllStatuses() {

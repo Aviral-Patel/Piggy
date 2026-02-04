@@ -102,7 +102,7 @@ const SMSParser = () => {
 
     // Transaction Details
     type: passedData.type || '',
-    category: passedData.category || '',
+    // Category removed - now auto-detected via Gemini API when parsing messages
 
     // Pattern and Sample
     regexPattern: passedData.regexPattern || passedData.pattern || '',
@@ -274,7 +274,7 @@ const SMSParser = () => {
         type: formData.type || null,
         regexPattern: formData.regexPattern,
         message: formData.message,
-        category: formData.category || null,
+        // Category removed - now auto-detected via Gemini API when parsing messages
         status: 'PENDING'
       };
 
@@ -300,7 +300,6 @@ const SMSParser = () => {
           bankName: '',
           merchantName: '',
           msgType: '',
-          category: '',
           regexPattern: '',
           message: '',
           onDemand: false,
@@ -607,7 +606,7 @@ const SMSParser = () => {
         </FieldGroup>
 
         {/* Transaction Details */}
-        <FieldGroup title="Transaction Details" cols={2}>
+        <FieldGroup title="Transaction Details" cols={1}>
           <SelectField
             label="Type"
             name="type"
@@ -616,14 +615,7 @@ const SMSParser = () => {
             options={['', 'CREDITED', 'DEBITED', 'ALERT', 'REMINDER']}
             disabled={userRole === 'checker'}
           />
-          <SelectField
-            label="Category"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            options={['', 'FOOD', 'SHOPPING', 'ENTERTAINMENT', 'TRANSPORT', 'UTILITIES', 'OTHERS']}
-            disabled={userRole === 'checker'}
-          />
+          {/* Category removed - now auto-detected via Gemini API when parsing messages */}
         </FieldGroup>
 
         {/* Pattern and Sample Message */}
@@ -758,7 +750,6 @@ const SMSParser = () => {
                     bankName: '',
                     merchantName: '',
                     msgType: '',
-                    category: '',
                     regexPattern: '',
                     message: '',
                     onDemand: false,

@@ -1,6 +1,7 @@
 package com.piggy.backend.util;
 
 import com.piggy.backend.entity.*;
+import com.piggy.backend.service.GeminiCategorizationService;
 import com.piggy.backend.service.PatternService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,11 +22,16 @@ class SmsRegexParserTest {
     @Mock
     private PatternService patternService;
 
+    @Mock
+    private GeminiCategorizationService geminiService;
+
     private SmsRegexParser smsRegexParser;
 
     @BeforeEach
     void setUp() {
-        smsRegexParser = new SmsRegexParser(patternService);
+        smsRegexParser = new SmsRegexParser(patternService, geminiService);
+        // By default, Gemini is disabled and returns OTHERS
+        when(geminiService.isEnabled()).thenReturn(false);
     }
 
     @Test
@@ -44,7 +50,7 @@ class SmsRegexParserTest {
         pattern.setId(1L);
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
+        // Category removed from Pattern - now auto-detected via Gemini API
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+\\.?\\d*).*debited.*A/c.*(?<accountNumber>XX\\d+)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -56,7 +62,8 @@ class SmsRegexParserTest {
         assertNotNull(result);
         assertEquals("HDFC Bank", result.getBankName());
         assertEquals("HDFCBK", result.getBankAddress());
-        assertEquals(Category.SHOPPING, result.getCategory());
+        // Category defaults to OTHERS when Gemini is disabled
+        assertEquals(Category.OTHERS, result.getCategory());
     }
 
     @Test
@@ -81,7 +88,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+\\.?\\d*).*(?<type>debited)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -99,7 +105,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.OTHERS);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+\\.?\\d*).*(?<type>credited)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -117,7 +122,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+\\.?\\d*).*debited");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -135,7 +139,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.OTHERS);
         pattern.setRegexPattern("(?<type>Alert).*statement.*ready");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -153,7 +156,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.OTHERS);
         pattern.setRegexPattern("(?<type>Reminder).*payment.*due");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -171,7 +173,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited.*at\\s+(?<merchant>[\\w\\s]+)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -189,7 +190,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited.*on\\s+(?<date>\\d{2}-\\w{3}-\\d{2})");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -207,7 +207,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited.*Avl Bal Rs\\.(?<balance>[\\d,]+)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -225,7 +224,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited.*Ref No\\.\\s*(?<refNumber>\\w+)");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -243,7 +241,6 @@ class SmsRegexParserTest {
         Pattern pattern = new Pattern();
         pattern.setBankAddress("HDFCBK");
         pattern.setBankName("HDFC Bank");
-        pattern.setCategory(Category.SHOPPING);
         pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*DEBITED");
         pattern.setStatus(PatternStatus.APPROVED);
 
@@ -261,14 +258,12 @@ class SmsRegexParserTest {
         Pattern pattern1 = new Pattern();
         pattern1.setBankAddress("HDFCBK");
         pattern1.setBankName("HDFC Bank");
-        pattern1.setCategory(Category.SHOPPING);
         pattern1.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited");
         pattern1.setStatus(PatternStatus.APPROVED);
 
         Pattern pattern2 = new Pattern();
         pattern2.setBankAddress("HDFCBK");
         pattern2.setBankName("HDFC Bank");
-        pattern2.setCategory(Category.FOOD);
         pattern2.setRegexPattern("INR\\s+(?<amount>[\\d,]+).*spent");
         pattern2.setStatus(PatternStatus.APPROVED);
 
@@ -278,6 +273,29 @@ class SmsRegexParserTest {
         Transaction result = smsRegexParser.parse("Rs.500 debited from account", "HDFCBK");
 
         assertNotNull(result);
+        // Category defaults to OTHERS when Gemini is disabled
+        assertEquals(Category.OTHERS, result.getCategory());
+    }
+
+    @Test
+    void testParseWithGeminiEnabled() {
+        Pattern pattern = new Pattern();
+        pattern.setBankAddress("HDFCBK");
+        pattern.setBankName("HDFC Bank");
+        pattern.setRegexPattern("Rs\\.(?<amount>[\\d,]+).*debited.*at\\s+(?<merchant>[\\w\\s]+)");
+        pattern.setStatus(PatternStatus.APPROVED);
+
+        when(patternService.getApprovedPatternsByBankAddress("HDFCBK"))
+            .thenReturn(Arrays.asList(pattern));
+        
+        // Enable Gemini and return SHOPPING for this merchant
+        when(geminiService.isEnabled()).thenReturn(true);
+        when(geminiService.categorize(anyString(), anyString())).thenReturn(Category.SHOPPING);
+
+        Transaction result = smsRegexParser.parse("Rs.500 debited at Amazon Store", "HDFCBK");
+
+        assertNotNull(result);
         assertEquals(Category.SHOPPING, result.getCategory());
+        verify(geminiService).categorize(anyString(), anyString());
     }
 }

@@ -64,7 +64,7 @@ public class PatternController {
         pattern.setType(dto.getType());
         pattern.setRegexPattern(dto.getRegexPattern());
         pattern.setMessage(dto.getMessage());
-        pattern.setCategory(dto.getCategory());
+        // Category removed - now auto-detected via Gemini API based on merchant name
         pattern.setStatus(dto.getStatus() != null ? dto.getStatus() : PatternStatus.PENDING);
         
         Pattern saved = patternService.savePattern(pattern);

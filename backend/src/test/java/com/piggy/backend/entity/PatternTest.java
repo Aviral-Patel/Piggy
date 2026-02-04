@@ -62,12 +62,7 @@ class PatternTest {
         assertEquals(message, pattern.getMessage());
     }
 
-    @Test
-    void testSetAndGetCategory() {
-        Pattern pattern = new Pattern();
-        pattern.setCategory(Category.SHOPPING);
-        assertEquals(Category.SHOPPING, pattern.getCategory());
-    }
+    // Category removed from Pattern - now auto-detected via Gemini API
 
     @Test
     void testSetAndGetStatus() {
@@ -86,13 +81,5 @@ class PatternTest {
         }
     }
 
-    @Test
-    void testAllCategories() {
-        Pattern pattern = new Pattern();
-        
-        for (Category category : Category.values()) {
-            pattern.setCategory(category);
-            assertEquals(category, pattern.getCategory());
-        }
-    }
+    // Category test removed - category is now auto-detected via Gemini API
 }
